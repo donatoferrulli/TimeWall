@@ -1,11 +1,14 @@
 package com.infoteck.timewall.Gallery.Fragment;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -28,7 +31,11 @@ import com.infoteck.timewall.Gallery.DetailActivity;
 import com.infoteck.timewall.Gallery.Factory.AbstractItemFactory;
 import com.infoteck.timewall.Gallery.Factory.Item;
 import com.infoteck.timewall.Gallery.Services.alarmWeather;
+import com.infoteck.timewall.Gallery.Services.serviceCalendar;
+import com.infoteck.timewall.Gallery.Services.serviceWeather;
 import com.infoteck.timewall.R;
+import com.mikepenz.google_material_typeface_library.GoogleMaterial;
+import com.mikepenz.iconics.IconicsDrawable;
 import com.survivingwithandroid.weather.lib.WeatherClient;
 import com.survivingwithandroid.weather.lib.WeatherConfig;
 import com.survivingwithandroid.weather.lib.client.okhttp.WeatherDefaultClient;
@@ -39,6 +46,8 @@ import com.survivingwithandroid.weather.lib.provider.openweathermap.Openweatherm
 
 import java.util.List;
 import java.util.Locale;
+
+import static com.infoteck.timewall.Gallery.GalleryActivity.fabStart;
 
 /**
  * Created by Pc on 31/12/2016.
@@ -55,7 +64,7 @@ public class WeatherFragment extends Fragment  implements AdapterView.OnItemClic
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.grid, container, false);
+        final View rootView = inflater.inflate(R.layout.grid, container, false);
         factory = AbstractItemFactory.getAbstractItemFactory("TimeWall",rootView.getContext());
         //enable menu control
         setHasOptionsMenu(true);
@@ -70,6 +79,54 @@ public class WeatherFragment extends Fragment  implements AdapterView.OnItemClic
             mAdapter = new GridAdapter(items,getActivity());
             mGridView.setAdapter(mAdapter);
         }
+
+
+        if (isMyServiceRunning(serviceWeather.class)){
+            fabStart.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.onColor)));
+            fabStart.setImageDrawable(new IconicsDrawable(rootView.getContext())
+                    .icon(GoogleMaterial.Icon.gmd_flash_on)
+                    .color(Color.WHITE)
+                    .sizeDp(24));
+        }else{
+            fabStart.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.offColor)));
+            fabStart.setImageDrawable(new IconicsDrawable(rootView.getContext())
+                    .icon(GoogleMaterial.Icon.gmd_flash_off)
+                    .color(Color.WHITE)
+                    .sizeDp(24));
+        }
+        fabStart.setVisibility(View.VISIBLE);
+
+        fabStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (isMyServiceRunning(serviceWeather.class)) {
+                    Intent intent = new Intent();
+                    intent.setClass(getActivity(), serviceWeather.class);
+                    getActivity().stopService(intent);
+                    Log.e("fab","Stop calendar service");
+                    fabStart.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.offColor)));
+                    fabStart.setImageDrawable(new IconicsDrawable(rootView.getContext())
+                            .icon(GoogleMaterial.Icon.gmd_flash_off)
+                            .color(Color.WHITE)
+                            .sizeDp(24));
+                    Toast.makeText(rootView.getContext(),R.string.switchCalendarNotActive,Toast.LENGTH_SHORT).show();
+                }else{
+                    Intent intent = new Intent();
+                    intent.setClass(getActivity(), serviceWeather.class);
+                    getActivity().startService(intent);
+                    Log.e("fab","Start calendar service");
+                    fabStart.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.onColor)));
+                    fabStart.setImageDrawable(new IconicsDrawable(rootView.getContext())
+                            .icon(GoogleMaterial.Icon.gmd_flash_on)
+                            .color(Color.WHITE)
+                            .sizeDp(24));
+                    Toast.makeText(rootView.getContext(),R.string.switchCalendarActive,Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+
         return rootView;
 
     }
@@ -250,6 +307,16 @@ public class WeatherFragment extends Fragment  implements AdapterView.OnItemClic
                 .positiveText(android.R.string.ok)
                 .show();
     
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getActivity().getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
 

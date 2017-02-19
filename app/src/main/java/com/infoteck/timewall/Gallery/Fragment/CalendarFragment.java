@@ -78,8 +78,7 @@ public class CalendarFragment extends Fragment  implements AdapterView.OnItemCli
             mGridView.setAdapter(mAdapter);
         }
 
-        service_status=isMyServiceRunning(serviceCalendar.class);
-        if (service_status){
+        if (isMyServiceRunning(serviceCalendar.class)){
             fabStart.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.onColor)));
             fabStart.setImageDrawable(new IconicsDrawable(rootView.getContext())
                     .icon(GoogleMaterial.Icon.gmd_flash_on)
