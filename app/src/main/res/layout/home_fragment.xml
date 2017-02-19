@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical" >
+
+            <android.support.v7.widget.CardView
+                xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/cardCalendar"
+                android:layout_margin="7dp"
+                android:layout_gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                card_view:cardCornerRadius="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/titleCalendar"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:maxLines="3"
+                            android:padding="8dp"
+                            android:text="@string/calendar"
+                            android:textColor="#fff"
+                            android:textStyle="bold"
+                            android:textSize="22sp" />
+
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"/>
+
+                        <android.support.v7.widget.SwitchCompat
+                            android:id="@+id/switchCalendar"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/descriptionCalendar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxLines="3"
+                        android:paddingLeft="8dp"
+                        android:paddingBottom="8dp"
+                        android:text="@string/descriptionCalendar"
+                        android:textColor="#fff"
+                        android:textStyle="bold"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+
+
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/cardWeather"
+                android:layout_margin="7dp"
+                android:layout_gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                card_view:cardCornerRadius="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/titleWeather"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:maxLines="3"
+                            android:padding="8dp"
+                            android:text="@string/weather"
+                            android:textColor="#fff"
+                            android:textStyle="bold"
+                            android:textSize="22sp" />
+
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"/>
+
+                        <android.support.v7.widget.SwitchCompat
+                            android:id="@+id/switchWeather"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/descriptionWeather"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxLines="3"
+                        android:paddingLeft="8dp"
+                        android:paddingBottom="8dp"
+                        android:text="@string/descriptionWeather"
+                        android:textColor="#fff"
+                        android:textStyle="bold"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+
+
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/cardFavorite"
+                android:layout_margin="7dp"
+                android:layout_gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                card_view:cardCornerRadius="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/titleFavorite"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:maxLines="3"
+                            android:padding="8dp"
+                            android:text="@string/favorite"
+                            android:textColor="#fff"
+                            android:textStyle="bold"
+                            android:textSize="22sp" />
+
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"/>
+
+                        <android.support.v7.widget.SwitchCompat
+                            android:id="@+id/switchFavorite"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/descriptionFavorite"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxLines="3"
+                        android:paddingLeft="8dp"
+                        android:paddingBottom="8dp"
+                        android:text="@string/descriptionFavorite"
+                        android:textColor="#fff"
+                        android:textStyle="bold"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+
+
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/cardRandom"
+                android:layout_margin="7dp"
+                android:layout_gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                card_view:cardCornerRadius="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/titleRandom"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:maxLines="3"
+                            android:padding="8dp"
+                            android:text="@string/random"
+                            android:textColor="#fff"
+                            android:textStyle="bold"
+                            android:textSize="22sp" />
+
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"/>
+
+                        <android.support.v7.widget.SwitchCompat
+                            android:id="@+id/switchRandom"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/descriptionRandom"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxLines="3"
+                        android:paddingLeft="8dp"
+                        android:paddingBottom="8dp"
+                        android:text="@string/descriptionRandom"
+                        android:textColor="#fff"
+                        android:textStyle="bold"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+
+
+
+            </android.support.v7.widget.CardView>
+
+        </LinearLayout>
+
+     </ScrollView>

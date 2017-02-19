@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#355555</color>
+    <color name="colorPrimaryDark">#2A4444</color>
+    <color name="colorAccent">#DFA7A7</color>
+    <color name="galleryActivity">#355555</color>
+    <color name="darkGreen">#375964</color>
+    <color name="darkDeepRed">#F73232</color>
+    <color name="offColor">#DF3D4E</color>
+    <color name="onColor">#41C19D</color>
+</resources>

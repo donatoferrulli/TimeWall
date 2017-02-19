@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/updateWeather"
+            app:ico_icon="gmd-delete"
+            android:title="@string/updateWeather" />
+        <item
+            android:id="@+id/changeLocation"
+            app:ico_icon="gmd-delete"
+            android:title="@string/changeLocation" />
+        <item
+            android:id="@+id/changeInterval"
+            app:ico_icon="gmd-delete"
+            android:title="@string/changeInterval" />
+
+    </group>
+
+
+
+</menu>

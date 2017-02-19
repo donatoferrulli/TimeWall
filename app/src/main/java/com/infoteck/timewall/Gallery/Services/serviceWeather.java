@@ -1,0 +1,51 @@
+package com.infoteck.timewall.Gallery.Services;
+
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.app.Service;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.IBinder;
+import android.support.annotation.Nullable;
+import android.util.Log;
+import android.widget.Toast;
+
+import com.infoteck.timewall.R;
+import com.survivingwithandroid.weather.lib.WeatherClient;
+import com.survivingwithandroid.weather.lib.WeatherConfig;
+import com.survivingwithandroid.weather.lib.exception.WeatherLibException;
+import com.survivingwithandroid.weather.lib.exception.WeatherProviderInstantiationException;
+import com.survivingwithandroid.weather.lib.model.CurrentWeather;
+import com.survivingwithandroid.weather.lib.model.Weather;
+import com.survivingwithandroid.weather.lib.provider.openweathermap.OpenweathermapProviderType;
+import com.survivingwithandroid.weather.lib.request.WeatherRequest;
+
+import java.util.List;
+import java.util.Locale;
+import java.util.logging.Logger;
+
+/**
+ * Created by Pc on 28/01/2017.
+ * The service will start an AlarmWeather every 30 min.
+ */
+
+public class serviceWeather extends Service {
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+    @Override
+    public void onCreate() {
+        SharedPreferences prefs = getSharedPreferences("weatherPreferences", Context.MODE_PRIVATE);
+        long interval =prefs.getLong("Interval",1800000);
+        Intent alarmIntent = new Intent(getApplicationContext(), alarmWeather.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, alarmIntent, 0);
+
+        AlarmManager manager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);        
+        manager.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
+
+        Log.e("serviceWeather","setted alarm");
+
+    }
+}

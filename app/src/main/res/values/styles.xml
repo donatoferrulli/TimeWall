@@ -1,0 +1,30 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat">
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="AppThemeOverlay" parent="Theme.AppCompat">
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <!--<item name="android:windowTranslucentNavigation">true</item>-->
+
+    </style>
+
+    <style name="AppThemeIntro" parent="Theme.AppCompat.Light.NoActionBar">
+    </style>
+
+    <style name="EditTextTintTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">#212121</item>
+    </style>
+
+</resources>

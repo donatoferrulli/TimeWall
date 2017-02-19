@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.infoteck.timewall">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/TimeWall"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        tools:replace="android:theme"
+        >
+        <activity android:name=".Intro.Intro" android:theme="@style/AppThemeIntro">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+
+        <activity android:name=".Gallery.GalleryActivity"
+            android:label="@string/TimeWall"
+            android:supportsRtl="true"/>
+
+        <activity android:name=".Gallery.DetailActivity"
+            android:theme="@style/AppThemeOverlay"/>
+
+        <activity android:name=".Gallery.DetailActivityFavorite"
+            android:theme="@style/AppThemeOverlay"/>
+
+        <service android:name=".Gallery.Services.serviceCalendar" />
+        <receiver android:name=".Gallery.Services.alarmCalendar" />
+        <service android:name=".Gallery.Services.serviceWeather" />
+        <receiver android:name=".Gallery.Services.alarmWeather" />
+        <service android:name=".Gallery.Services.serviceFavorite" />
+        <receiver android:name=".Gallery.Services.alarmFavorite" />
+        <service android:name=".Gallery.Services.serviceRandom" />
+        <receiver android:name=".Gallery.Services.alarmRandom" />
+
+    </application>
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.SET_WALLPAPER"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+
+</manifest>
