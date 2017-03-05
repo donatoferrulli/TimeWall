@@ -29,14 +29,18 @@ import com.squareup.picasso.Target;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -63,6 +67,10 @@ import java.io.OutputStreamWriter;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import static com.infoteck.timewall.R.id.infoImageView;
 
 /**
  * Our secondary Activity which is launched from {@link GalleryActivity}. Has a simple detail UI
@@ -90,6 +98,8 @@ public class DetailActivity extends AppCompatActivity {
     private ImageView addPhotoImageView;
     private ImageView favoriteImageView;
     private ImageView infoImageView;
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(IconicsContextWrapper.wrap(newBase)); //wrap icon material for fab
@@ -171,6 +181,9 @@ public class DetailActivity extends AppCompatActivity {
                 FabTransformation.with(fab)
                         .transformFrom(toolbarFooter);
 
+                dispatchTakePictureIntent();
+
+
             }
         });
         favoriteImageView.setOnClickListener(new View.OnClickListener() {
@@ -205,9 +218,6 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
 
-        //ONLY FOR TEST PURPOSE
-        new changeWallpaper(getApplicationContext()).execute(mItem.getPhotoUrl());
-        ///////////
         loadItem();
     }
 
@@ -227,12 +237,10 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Load the item's thumbnail image into our {@link ImageView}.
-     */
+
     private void loadThumbnail() {
-        Picasso.with(mHeaderImageView.getContext()).load(mItem.getThumbnailUrl()).into(mHeaderImageView,
-                PicassoPalette.with(mItem.getThumbnailUrl(), mHeaderImageView)
+        Picasso.with(mHeaderImageView.getContext()).load(mItem.getPhotoUrl()).into(mHeaderImageView,
+                PicassoPalette.with(mItem.getPhotoUrl(), mHeaderImageView)
                         .use(PicassoPalette.Profile.VIBRANT)
                         .intoCallBack(
                                 new PicassoPalette.CallBack() {
@@ -260,6 +268,112 @@ public class DetailActivity extends AppCompatActivity {
                 .noPlaceholder()
                 .into(getTarget(mItem.getId(),""));
     }
+
+    /**
+     * Try and add a {@link Transition.TransitionListener} to the entering shared element
+     * {@link Transition}. We do this so that we can load the full-size image after the transition
+     * has completed.
+     *
+     * @return true if we were successful in adding a listener to the enter transition
+     */
+
+    //target to save
+    private Target getTarget(final int id , final String dirPath){
+        Target target = new Target(){
+
+            @Override
+            public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
+                mHeaderImageView.setImageBitmap(bitmap);
+                new Thread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        String pathGlobal = Environment.getExternalStorageDirectory() + File.separator + "TimeWall";
+
+                        try{
+                                String path= pathGlobal+ "/"+dirPath+id+".jpg";
+                                File file = new File(path);
+                                file.createNewFile();
+                                FileOutputStream ostream = new FileOutputStream(file);
+                                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, ostream);
+                                ostream.flush();
+                                ostream.close();
+
+                                //add Item Path to ITEMS
+                                factory.setItemPath(mItem,path);
+
+                        } catch (IOException e) {
+                            Log.e("IOException", e.getLocalizedMessage());
+
+                            File dirPath = new File(pathGlobal);
+                            if (!dirPath.exists())
+                                dirPath.mkdirs();
+                            dirPath = new File(pathGlobal+ "/Favorite");
+                            if (!dirPath.exists())
+                                dirPath.mkdirs();
+                        }
+                    }
+                }).start();
+
+            }
+
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {
+
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+            }
+        };
+        return target;
+    }
+
+    private void dispatchTakePictureIntent() {
+        Intent chooserIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        String pathGlobal = Environment.getExternalStorageDirectory() + File.separator + "TimeWall";
+        String path= pathGlobal+ "/"+mItem.getId()+"_test.jpg";
+        mItem.setLocalPath(path);
+        File f = new File(path);
+        chooserIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+        startActivityForResult(chooserIntent, REQUEST_IMAGE_CAPTURE);
+    }
+
+    @Override
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            File file = new File(mItem.getLocalFileImage());
+            Picasso.with(mHeaderImageView.getContext())
+                    .load(file)
+                    .noFade()
+                    .noPlaceholder()
+                    .into(mHeaderImageView);
+            //TODO update timewall json
+            //add Item Path to ITEMS
+            factory.setItemPath(mItem,mItem.getLocalFileImage());
+        }
+    }
+
+    String mCurrentPhotoPath;
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        File pathGlobal = new File( Environment.getExternalStorageDirectory() + File.separator + "TimeWall");
+        String path= String.valueOf(mItem.getId());
+        File image = File.createTempFile(
+                path,  /* prefix */
+                ".jpg",         /* suffix */
+                pathGlobal      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
 
     /**
      * Try and add a {@link Transition.TransitionListener} to the entering shared element
@@ -309,59 +423,6 @@ public class DetailActivity extends AppCompatActivity {
 
         // If we reach here then we have not added a listener
         return false;
-    }
-
-    //target to save
-    private Target getTarget(final int id , final String dirPath){
-        Target target = new Target(){
-
-            @Override
-            public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
-                mHeaderImageView.setImageBitmap(bitmap);
-                new Thread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        String pathGlobal = Environment.getExternalStorageDirectory() + File.separator + "TimeWall";
-
-                        try{
-                                String path= pathGlobal+ "/"+dirPath+id+".jpg";
-                                File file = new File(path);
-                                file.createNewFile();
-                                FileOutputStream ostream = new FileOutputStream(file);
-                                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, ostream);
-                                ostream.flush();
-                                ostream.close();
-
-                                //add Item Path to ITEMS
-                                factory.setItemPath(mItem.getId(),path);
-
-                        } catch (IOException e) {
-                            Log.e("IOException", e.getLocalizedMessage());
-
-                            File dirPath = new File(pathGlobal);
-                            if (!dirPath.exists())
-                                dirPath.mkdirs();
-                            dirPath = new File(pathGlobal+ "/Favorite");
-                            if (!dirPath.exists())
-                                dirPath.mkdirs();
-                        }
-                    }
-                }).start();
-
-            }
-
-            @Override
-            public void onBitmapFailed(Drawable errorDrawable) {
-
-            }
-
-            @Override
-            public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-            }
-        };
-        return target;
     }
 
 

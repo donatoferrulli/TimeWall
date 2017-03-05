@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.infoteck.timewall.Gallery.GalleryActivity;
 import com.infoteck.timewall.Utilities.jsonFromUrl;
 
 import org.json.JSONException;
@@ -23,7 +24,10 @@ import java.util.concurrent.ExecutionException;
 
 public class TimeWallFactory extends AbstractItemFactory{
 
+    private Context context;
+
     public TimeWallFactory(Context context){
+        this.context=context;
         //get default images json from web
         try {
             SharedPreferences sharedPref = context.getSharedPreferences( "appData", Context.MODE_PRIVATE);
@@ -55,17 +59,19 @@ public class TimeWallFactory extends AbstractItemFactory{
 
     @Override
     public List<Item> getCalendarItem(String type) {
+        currentJsonView=type;
         List<Item> tempList = null;
         if (type.equals("calendar")){
             tempList=getDailyElements(type);
-        }else if(type.equals("week") || type.equals("month")){
-            tempList=getCalendarElements(type);
+        }else if(type.equals("week") || type.equals("month")) {
+            tempList = getCalendarElements(type);
         }
         return tempList;
     }
 
     @Override
     public List<Item> getWeatherItem() {
+        currentJsonView="weather";
         items = new ArrayList<Item>();
         try {
             JSONObject jObject = webDefaultJson.getJSONObject("weather");
@@ -75,7 +81,13 @@ public class TimeWallFactory extends AbstractItemFactory{
                 String key = (String)keys.next();
                 if ( jObject.get(key) instanceof JSONObject ) {
                     JSONObject tempJObject = (JSONObject)jObject.get(key);
-                    items.add(new Item(tempJObject.getString("type"), tempJObject.getString("author"),tempJObject.getString("ThumbnailUrl") ,tempJObject.getString("PhotoUrl"),Integer.parseInt(key)));
+                    String LocalPath;
+                    try{
+                        LocalPath=tempJObject.getString("LocalPath");
+                    }catch (JSONException e){
+                        LocalPath=null;
+                    }
+                    items.add(new Item(tempJObject.getString("type"), tempJObject.getString("author"),tempJObject.getString("PhotoUrl"),LocalPath,Integer.parseInt(key)));
                 }
             }
         } catch (JSONException e) {
@@ -107,11 +119,38 @@ public class TimeWallFactory extends AbstractItemFactory{
     }
 
     @Override
-    public void setItemPath(int id, String path) {
+    public void setItemPath(Item itemToEdit, String path) {
+        boolean founded=false;
         for (Item item : items) {
-            if (item.getId() == id) {
+            if (item.getId() == itemToEdit.getId()) {
                 item.setLocalPath(path);
-                //TODO update webDefaultJson
+                JSONObject jObject = null;
+                try {
+                    jObject = webDefaultJson.getJSONObject(currentJsonView);
+                    Iterator<?> keys = jObject.keys();
+
+                    while( keys.hasNext() && !founded) {
+                        String key = (String) keys.next();
+                        JSONObject tempJObject = (JSONObject)jObject.get(key);
+                        String a =tempJObject.getString("PhotoUrl");
+                        String b =itemToEdit.getPhotoUrl();
+                        if(tempJObject.getString("PhotoUrl").equals(itemToEdit.getPhotoUrl())){
+                            tempJObject.remove("LocalPath");
+                            tempJObject.accumulate("LocalPath",path);
+                            founded=true;
+                            String str = webDefaultJson.toString();
+                            SharedPreferences.Editor prefEditor = context.getSharedPreferences( "appData", Context.MODE_PRIVATE).edit();
+                            prefEditor.putString( "webDefaultJson", str );
+                            prefEditor.commit();
+                        }
+
+                    }
+                    //REMOVE ELEMENT
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
             }
         }
     }
@@ -137,7 +176,13 @@ public class TimeWallFactory extends AbstractItemFactory{
                     jObject = webDefaultJson.getJSONObject(type).getJSONObject(String.valueOf(tempMonth));
                 }
                 JSONObject dayObject = (JSONObject)jObject.get(String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)));
-                items.add(new Item(new SimpleDateFormat("dd/MM").format(calendar.getTime()), dayObject.getString("author"),dayObject.getString("ThumbnailUrl") ,dayObject.getString("PhotoUrl")));
+                String LocalPath;
+                try{
+                    LocalPath=dayObject.getString("LocalPath");
+                }catch (JSONException e){
+                    LocalPath=null;
+                }
+                items.add(new Item(new SimpleDateFormat("dd/MM").format(calendar.getTime()), dayObject.getString("author"),dayObject.getString("PhotoUrl") ,LocalPath));
                 calendar.add(Calendar.DATE, 1);
             }
 
@@ -162,7 +207,14 @@ public class TimeWallFactory extends AbstractItemFactory{
                 if ( jObject.get(key) instanceof JSONObject ) {
                     JSONObject tempJObject = (JSONObject)jObject.get(key);
                     //TODO names
-                    items.add(new Item(tempJObject.getString("name"), tempJObject.getString("author"),tempJObject.getString("ThumbnailUrl") ,tempJObject.getString("PhotoUrl")));
+                    String LocalPath;
+                    try{
+                        LocalPath=tempJObject.getString("LocalPath");
+                    }catch (JSONException e){
+                        LocalPath=null;
+                    }
+
+                    items.add(new Item(tempJObject.getString("name"), tempJObject.getString("author"),tempJObject.getString("PhotoUrl") ,LocalPath));
                 }
             }
         } catch (JSONException e) {

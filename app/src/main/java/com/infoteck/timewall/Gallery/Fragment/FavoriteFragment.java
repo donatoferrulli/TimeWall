@@ -1,12 +1,21 @@
 package com.infoteck.timewall.Gallery.Fragment;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.util.Pair;
+import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,22 +52,59 @@ public class FavoriteFragment extends Fragment  implements AdapterView.OnItemCli
         mGridView.setNestedScrollingEnabled(true);
         mGridView.setOnItemClickListener(this);
 
-        //Setup the adapter
-        List<Item> items= factory.getFavoriteItem();
-        if (items!=null){
-            mAdapter = new GridAdapter(items,getActivity());
-            mGridView.setAdapter(mAdapter);
-        }
         return rootView;
 
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (ActivityCompat.checkSelfPermission(getActivity(), permissions[0]) == PackageManager.PERMISSION_GRANTED) {
+
+            switch (requestCode) {
+                case 1:
+                    List<Item> items = factory.getFavoriteItem();
+                    if (items != null) {
+                        mAdapter = new GridAdapter(items, getActivity());
+                        mGridView.setAdapter(mAdapter);
+                    }
+                    break;
+            }
+        }else{
+            Log.e("onRequestPermissions","no");
+        }
+    }
+
+
+
+    @Override
     public void onResume() {
         super.onResume();
-        List<Item> items= factory.getFavoriteItem();
-        mAdapter = new GridAdapter(items,getActivity());
-        mGridView.setAdapter(mAdapter);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if(ContextCompat.checkSelfPermission(getActivity(),android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getActivity());
+                alertBuilder.setCancelable(true);
+                alertBuilder.setTitle(R.string.permissionTitle);
+                alertBuilder.setMessage(R.string.permissionStorage);
+                alertBuilder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.M)
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                    }
+                });
+
+                AlertDialog alert = alertBuilder.create();
+                alert.show();
+            }else{
+                List<Item> items= factory.getFavoriteItem();
+                if (items!=null){
+                    mAdapter = new GridAdapter(items,getActivity());
+                    mGridView.setAdapter(mAdapter);
+                }
+            }
+        }
     }
 
     /**

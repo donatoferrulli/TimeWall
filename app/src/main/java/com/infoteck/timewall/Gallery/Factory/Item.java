@@ -28,36 +28,23 @@ public class Item {
 
     private String mName;
     private String mAuthor;
-    private String mThumbnailUrl;
     private String mPhotoUrl;
     private String mLocalPath;
     private int mWeatherCode;
 
-    public Item (String name, String author, String ThumbnailUrl, String PhotoUrl) {
+
+    public Item (String name, String author, String PhotoUrl,String LocalPath) {
         mName = name;
         mAuthor = author;
-        mThumbnailUrl = ThumbnailUrl;
-        mPhotoUrl = PhotoUrl;
-    }
-    public Item (String name, String author, String ThumbnailUrl, String PhotoUrl,String LocalPath) {
-        mName = name;
-        mAuthor = author;
-        mThumbnailUrl = ThumbnailUrl;
         mPhotoUrl = PhotoUrl;
         mLocalPath = LocalPath;
     }
-    public Item (String name, String author, String ThumbnailUrl, String PhotoUrl,int WeatherCode) {
+    public Item (String name, String author, String PhotoUrl,String LocalPath ,int WeatherCode) {
         mName = name;
         mAuthor = author;
-        mThumbnailUrl = ThumbnailUrl;
         mPhotoUrl = PhotoUrl;
+        mLocalPath = LocalPath;
         mWeatherCode = WeatherCode;
-    }
-    public Item (String name, String author, String url) {
-        mName = name;
-        mAuthor = author;
-        mThumbnailUrl = url;
-        mPhotoUrl = url;
     }
 
     public int getId() {
@@ -76,10 +63,6 @@ public class Item {
 
     public String getPhotoUrl() {
         return mPhotoUrl;
-    }
-
-    public String getThumbnailUrl() {
-        return mThumbnailUrl;
     }
 
     public int getWeatherCode() {

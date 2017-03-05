@@ -83,7 +83,7 @@ public class DetailActivityFavorite extends AppCompatActivity {
         setContentView(R.layout.details_favorite);
         // Retrieve the correct Item instance, using the ID provided in the Intent
         String path=Environment.getExternalStorageDirectory() + File.separator + "TimeWall"+ File.separator + "Favorite";
-        mItem = new Item(String.valueOf(getIntent().getIntExtra(EXTRA_PARAM_ID,0)), "","" ,"",path+File.separator+String.valueOf(getIntent().getIntExtra(EXTRA_PARAM_ID,0))+".jpg");
+        mItem = new Item(String.valueOf(getIntent().getIntExtra(EXTRA_PARAM_ID,0)), "" ,"",path+File.separator+String.valueOf(getIntent().getIntExtra(EXTRA_PARAM_ID,0))+".jpg");
         //get components view FOOTER
         fab = (FloatingActionButton) findViewById(R.id.fab);
         toolbarFooter = (Toolbar) findViewById(R.id.toolbar_footer);

@@ -5,6 +5,9 @@ package com.infoteck.timewall.Gallery.Fragment;
  */
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,11 +17,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.github.florent37.picassopalette.PicassoPalette;
+import com.infoteck.timewall.Gallery.Factory.AbstractItemFactory;
 import com.infoteck.timewall.Gallery.Factory.Item;
 import com.infoteck.timewall.R;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -28,6 +35,7 @@ class GridAdapter extends BaseAdapter {
 
     private List<Item> items;
     private Context context;
+    private AbstractItemFactory factory ;
     GridAdapter(List<Item> list, Context contextReceived){
         items=list;
         context=contextReceived;
@@ -53,6 +61,7 @@ class GridAdapter extends BaseAdapter {
         if (view == null) {
             view = LayoutInflater.from(context).inflate(R.layout.grid_item, viewGroup, false);
         }
+        factory = AbstractItemFactory.getAbstractItemFactory("TimeWall",view.getContext());
 
         //Log.e("getView",position+" "+getItem(position).getName());
 
@@ -67,15 +76,19 @@ class GridAdapter extends BaseAdapter {
         if(item.getLocalFileImage()==null){
             Log.i("GridAdapter","Load image from web");
             Picasso.with(view.getContext())
-                    .load(item.getThumbnailUrl())
+                    .load(item.getPhotoUrl())
 //                    .resize(500, 500)
 //                    .centerInside()
                     .into(imageView,
-                            PicassoPalette.with(item.getThumbnailUrl(), imageView)
+                            PicassoPalette.with(item.getPhotoUrl(), imageView)
                                     .use(PicassoPalette.Profile.VIBRANT)
                                     .intoBackground(name, PicassoPalette.Swatch.RGB)
                                     .intoTextColor(name, PicassoPalette.Swatch.BODY_TEXT_COLOR)
                     );
+            //save image
+            Picasso.with(view.getContext())
+                    .load(item.getPhotoUrl())
+                    .into(getTarget(item,""));
         }else{
             Log.i("GridAdapter","Load image from local storage");
             File file = new File(item.getLocalFileImage());
@@ -84,7 +97,7 @@ class GridAdapter extends BaseAdapter {
                     .resize(500, 500)
                     .centerInside()
                     .into(imageView,
-                            PicassoPalette.with(item.getThumbnailUrl(), imageView)
+                            PicassoPalette.with(item.getPhotoUrl(), imageView)
                                     .use(PicassoPalette.Profile.VIBRANT)
                                     .intoBackground(name, PicassoPalette.Swatch.RGB)
                                     .intoTextColor(name, PicassoPalette.Swatch.BODY_TEXT_COLOR)
@@ -95,4 +108,55 @@ class GridAdapter extends BaseAdapter {
 
         return view;
     }
+
+
+
+
+    //target to save
+    private Target getTarget(final Item item , final String dirPath){
+        Target target = new Target(){
+
+            @Override
+            public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
+                        String pathGlobal = Environment.getExternalStorageDirectory() + File.separator + "TimeWall";
+
+                        try{
+                            String path= pathGlobal+ "/"+dirPath+item.getId()+".jpg";
+                            File file = new File(path);
+                            file.createNewFile();
+                            FileOutputStream ostream = new FileOutputStream(file);
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, ostream);
+                            ostream.flush();
+                            ostream.close();
+
+                            //add Item Path to ITEMS
+                            factory.setItemPath(item,path);
+                            Log.e("GridAdapter.getTarget","Path created");
+
+                        } catch (Exception e) {
+                            Log.e("Exception", e.getLocalizedMessage());
+
+                            File dirPath = new File(pathGlobal);
+                            if (!dirPath.exists())
+                                dirPath.mkdirs();
+                            dirPath = new File(pathGlobal+ "/Favorite");
+                            if (!dirPath.exists())
+                                dirPath.mkdirs();
+                        }
+
+            }
+
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {
+
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+            }
+        };
+        return target;
+    }
+
 }

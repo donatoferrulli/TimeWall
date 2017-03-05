@@ -44,6 +44,8 @@ dependencies {
     compile 'net.rdrei.android.dirchooser:library:3.2@aar'
     compile 'com.afollestad.material-dialogs:core:0.9.2.3'
 
+    compile 'com.karumi:dexter:3.0.2'
+
 
 
 

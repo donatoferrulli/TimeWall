@@ -22,6 +22,7 @@ import java.util.Random;
 
 public abstract class AbstractItemFactory {
     static List<Item> items = new ArrayList<Item>();
+    static String currentJsonView="";
     int factoryVersion;
     JSONObject webDefaultJson;
 
@@ -38,10 +39,11 @@ public abstract class AbstractItemFactory {
     public abstract List<Item> getItems();
     public abstract void clearItems();
     public abstract Item getItem(int id);
-    public abstract void setItemPath(int id,String path);
+    public abstract void setItemPath(Item itemToEdit, String path);
     public abstract int getFactoryVersion();
 
     public List<Item> getFavoriteItem(){
+            currentJsonView="favorite";
             List<Item> items = new ArrayList<Item>();
             String path=Environment.getExternalStorageDirectory() + File.separator + "TimeWall"+ File.separator + "Favorite";
 
@@ -49,7 +51,7 @@ public abstract class AbstractItemFactory {
             String [] imagesPath=file.list();
             for (String fileName : imagesPath) {
                 if (fileName.toLowerCase().endsWith(".jpg")) {
-                    items.add(new Item(fileName.replace(".jpg",""), "","" ,"",path+File.separator+fileName));
+                    items.add(new Item(fileName.replace(".jpg",""), "" ,"",path+File.separator+fileName));
                 }
             }
 
@@ -58,12 +60,13 @@ public abstract class AbstractItemFactory {
     }
 
         public List<Item> getRandomLocalItem(String path){
+            currentJsonView="random";
             List<Item> items = new ArrayList<Item>();
             File file = new File(path);
             String [] imagesPath=file.list();
             for (String fileName : imagesPath) {
                 if (fileName.toLowerCase().endsWith(".jpg")) {
-                    items.add(new Item(fileName.replace(".jpg",""), "","" ,"",path+File.separator+fileName));
+                    items.add(new Item(fileName.replace(".jpg",""), "" ,"",path+File.separator+fileName));
                 }
             }
             long seed = System.nanoTime();
