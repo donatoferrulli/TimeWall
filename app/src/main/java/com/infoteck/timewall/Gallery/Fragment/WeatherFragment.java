@@ -131,6 +131,15 @@ public class WeatherFragment extends Fragment  implements AdapterView.OnItemClic
 
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+        Log.e("weatherFragment","onresume");
+        mAdapter.notifyDataSetChanged();
+
+    }
+
+
     /**
      * Called when an item in the {@link GridView} is clicked. Here will launch the
      * {@link DetailActivity}, using the Scene Transition animation functionality.

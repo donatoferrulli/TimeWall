@@ -31,6 +31,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
@@ -100,6 +101,7 @@ public class DetailActivity extends AppCompatActivity {
     private ImageView favoriteImageView;
     private ImageView infoImageView;
     static final int REQUEST_IMAGE_CAPTURE = 1;
+    static final int REQUEST_IMAGE_CAPTURE_GALLERY = 2;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -166,6 +168,9 @@ public class DetailActivity extends AppCompatActivity {
             public void onClick(View view) {
                 FabTransformation.with(fab)
                         .transformFrom(toolbarFooter);
+                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                photoPickerIntent.setType("image/*");
+                startActivityForResult(photoPickerIntent, REQUEST_IMAGE_CAPTURE_GALLERY);
             }
         });
         defaultImageView.setOnClickListener(new View.OnClickListener() {
@@ -410,12 +415,40 @@ public class DetailActivity extends AppCompatActivity {
             //TODO update timewall json
             //add Item Path to webDefaultJson
             factory.setItemPath(mItem,mItem.getLocalFileImage());
+        }else{
+            if (requestCode == REQUEST_IMAGE_CAPTURE_GALLERY && resultCode == RESULT_OK && data != null) {
+                // Let's read picked image data - its URI
+                Uri pickedImage = data.getData();
+                // Let's read picked image path using content resolver
+                String[] filePath = { MediaStore.Images.Media.DATA };
+                Cursor cursor = getContentResolver().query(pickedImage, filePath, null, null, null);
+                cursor.moveToFirst();
+                String imagePath = cursor.getString(cursor.getColumnIndex(filePath[0]));
+
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                Bitmap bitmap = BitmapFactory.decodeFile(imagePath, options);
+                mHeaderImageView.setImageBitmap(bitmap);
+                try {
+                    //TODO refactor functions check if file exists
+                    createImageFileFromBitmap(bitmap,mItem);
+                    createThumbFileFromBitmap(Bitmap.createScaledBitmap(bitmap,240,320,false),mItem);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                // Do something with the bitmap
+
+
+                // At the end remember to close the cursor or you will end with the RuntimeException!
+                cursor.close();
+            }
         }
     }
 
     String mCurrentPhotoPath;
 
     private void createThumbFileFromBitmap(final Bitmap bitmap, final Item item) throws IOException {
+        Log.e("createThumbFileBitmap",item.getName());
         new Thread(new Runnable() {
 
             @Override
@@ -430,6 +463,43 @@ public class DetailActivity extends AppCompatActivity {
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, ostream);
                     ostream.flush();
                     ostream.close();
+
+                } catch (IOException e) {
+                    Log.e("IOException", e.getLocalizedMessage());
+
+                    File dirPath = new File(pathGlobal);
+                    if (!dirPath.exists())
+                        dirPath.mkdirs();
+                    dirPath = new File(pathGlobal+ "/Favorite");
+                    if (!dirPath.exists())
+                        dirPath.mkdirs();
+                    dirPath = new File(pathGlobal+ "/User_photos");
+                    if (!dirPath.exists())
+                        dirPath.mkdirs();
+                }
+            }
+        }).start();
+
+    }
+
+    private void createImageFileFromBitmap(final Bitmap bitmap, final Item item) throws IOException {
+        Log.e("createImageFileBitmap",item.getName());
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                String pathGlobal = Environment.getExternalStorageDirectory() + File.separator + "TimeWall";
+
+                try{
+                    String path= pathGlobal+ "/User_photos/"+item.getId()+".jpg";
+                    File file = new File(path);
+                    file.createNewFile();
+                    FileOutputStream ostream = new FileOutputStream(file);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, ostream);
+                    ostream.flush();
+                    ostream.close();
+                    mItem.setLocalPath(path);
+                    factory.setItemPath(mItem,path);
 
                 } catch (IOException e) {
                     Log.e("IOException", e.getLocalizedMessage());
