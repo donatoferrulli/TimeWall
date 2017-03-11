@@ -128,6 +128,13 @@ public class CalendarFragment extends Fragment  implements AdapterView.OnItemCli
 
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+        mAdapter.notifyDataSetChanged();
+
+    }
+
     /**
      * Called when an item in the {@link GridView} is clicked. Here will launch the
      * {@link DetailActivity}, using the Scene Transition animation functionality.

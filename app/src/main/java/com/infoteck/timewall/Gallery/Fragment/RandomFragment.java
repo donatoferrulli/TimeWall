@@ -9,6 +9,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.app.Fragment;
 import android.support.v4.util.Pair;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,6 +61,12 @@ public class RandomFragment extends Fragment implements AdapterView.OnItemClickL
 
         return rootView;
 
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override

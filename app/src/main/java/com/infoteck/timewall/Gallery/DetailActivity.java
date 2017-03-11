@@ -179,6 +179,7 @@ public class DetailActivity extends AppCompatActivity {
                 FabTransformation.with(fab)
                         .transformFrom(toolbarFooter);
                 factory.setItemPath(mItem,null);
+                //TODO destroy images
                 loadItem();
             }
         });

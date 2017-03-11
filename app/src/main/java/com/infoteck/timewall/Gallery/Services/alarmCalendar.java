@@ -42,11 +42,27 @@ public class alarmCalendar extends BroadcastReceiver {
         String mode = prefs.getString("Mode","week");
         if(mode.equals("week")){            
             int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)-1;
-            new changeWallpaper(context).execute(items.get(dayOfWeek).getPhotoUrl());
+            if(items.get(dayOfWeek).getLocalFileImage()==null){
+                new changeWallpaper(context).execute(items.get(dayOfWeek).getPhotoUrl());
+            }else{
+                new changeWallpaper(context).execute(items.get(dayOfWeek).getLocalFileImage());
+            }
         }else if(mode.equals("month")){
             int month = calendar.get(Calendar.MONTH)-1;
-            new changeWallpaper(context).execute(items.get(month).getPhotoUrl());
+            if(items.get(month).getLocalFileImage()==null){
+                new changeWallpaper(context).execute(items.get(month).getPhotoUrl());
+            }else{
+                new changeWallpaper(context).execute(items.get(month).getLocalFileImage());
+            }
+
         }
+        //create notification
+        int notificationID= 12;
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(context)
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentTitle(context.getResources().getString(R.string.calendarNotification))
+                        .setContentText(context.getResources().getString(R.string.calendarNotificationContent));
         
     }
 

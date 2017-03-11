@@ -66,7 +66,12 @@ public class alarmWeather extends BroadcastReceiver {
                                 i++;
                             }
                             if(items.get(i).getWeatherCode()==weatherID){
-                                new changeWallpaper(context).execute(items.get(i).getPhotoUrl());
+                                if(items.get(i).getLocalFileImage()==null){
+                                    new changeWallpaper(context).execute(items.get(i).getPhotoUrl());
+                                }else{
+                                    new changeWallpaper(context).execute(items.get(i).getLocalFileImage());
+                                }
+
                             }
 
                             //TODO check if notifications are enabled
