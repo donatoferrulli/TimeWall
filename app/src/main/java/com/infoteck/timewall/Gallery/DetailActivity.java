@@ -32,6 +32,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -172,7 +173,8 @@ public class DetailActivity extends AppCompatActivity {
             public void onClick(View view) {
                 FabTransformation.with(fab)
                         .transformFrom(toolbarFooter);
-
+                factory.setItemPath(mItem,null);
+                loadItem();
             }
         });
         addPhotoImageView.setOnClickListener(new View.OnClickListener() {
@@ -239,34 +241,77 @@ public class DetailActivity extends AppCompatActivity {
 
 
     private void loadThumbnail() {
-        Picasso.with(mHeaderImageView.getContext()).load(mItem.getPhotoUrl()).into(mHeaderImageView,
-                PicassoPalette.with(mItem.getPhotoUrl(), mHeaderImageView)
-                        .use(PicassoPalette.Profile.VIBRANT)
-                        .intoCallBack(
-                                new PicassoPalette.CallBack() {
-                                    @Override
-                                    public void onPaletteLoaded(Palette palette) {
-                                        //specific task
-                                        fab.setBackgroundTintList(ColorStateList.valueOf(palette.getVibrantColor(0)));
-                                        toolbarFooter.setBackgroundTintList(ColorStateList.valueOf(palette.getVibrantColor(0)));
-                                        if(palette.getVibrantColor(0)==0){
-                                            toolbarFooter.setAlpha(1);
-                                        }
+        if(mItem.getLocalFileImage()==null){
+            Picasso.with(mHeaderImageView.getContext()).load(mItem.getPhotoUrl()).into(mHeaderImageView,
+                    PicassoPalette.with(mItem.getPhotoUrl(), mHeaderImageView)
+                            .use(PicassoPalette.Profile.VIBRANT)
+                            .intoCallBack(
+                                    new PicassoPalette.CallBack() {
+                                        @Override
+                                        public void onPaletteLoaded(Palette palette) {
+                                            //specific task
+                                            fab.setBackgroundTintList(ColorStateList.valueOf(palette.getVibrantColor(0)));
+                                            toolbarFooter.setBackgroundTintList(ColorStateList.valueOf(palette.getVibrantColor(0)));
+                                            if(palette.getVibrantColor(0)==0){
+                                                toolbarFooter.setAlpha(1);
+                                            }
 
-                                    }
-                                })
-        );
+                                        }
+                                    })
+            );
+        }else{
+            File file = new File(mItem.getLocalFileImage());
+            Picasso.with(mHeaderImageView.getContext())
+                    .load(file)
+                    .into(mHeaderImageView,
+                        PicassoPalette.with(mItem.getPhotoUrl(), mHeaderImageView)
+                                .use(PicassoPalette.Profile.VIBRANT)
+                                .intoCallBack(
+                                        new PicassoPalette.CallBack() {
+                                            @Override
+                                            public void onPaletteLoaded(Palette palette) {
+                                                //specific task
+                                                fab.setBackgroundTintList(ColorStateList.valueOf(palette.getVibrantColor(0)));
+                                                toolbarFooter.setBackgroundTintList(ColorStateList.valueOf(palette.getVibrantColor(0)));
+                                                if(palette.getVibrantColor(0)==0){
+                                                    toolbarFooter.setAlpha(1);
+                                                }
+
+                                            }
+                                        })
+                    );
+        }
+
+
+
+
     }
 
     /**
      * Load the item's full-size image into our {@link ImageView}.
      */
     private void loadFullSizeImage() {
-        Picasso.with(mHeaderImageView.getContext())
-                .load(mItem.getPhotoUrl())
-                .noFade()
-                .noPlaceholder()
-                .into(getTarget(mItem.getId(),""));
+
+        if(mItem.getLocalFileImage()==null){
+            Picasso.with(mHeaderImageView.getContext())
+                    .load(mItem.getPhotoUrl())
+                    .noFade()
+                    .noPlaceholder()
+                    .into(mHeaderImageView);
+        }else{
+            File file = new File(mItem.getLocalFileImage());
+            Picasso.with(mHeaderImageView.getContext())
+                    .load(file)
+                    .noFade()
+                    .noPlaceholder()
+                    .into(mHeaderImageView);
+        }
+
+
+
+
+
+
     }
 
     /**
@@ -311,6 +356,9 @@ public class DetailActivity extends AppCompatActivity {
                             dirPath = new File(pathGlobal+ "/Favorite");
                             if (!dirPath.exists())
                                 dirPath.mkdirs();
+                            dirPath = new File(pathGlobal+ "/User_photos");
+                            if (!dirPath.exists())
+                                dirPath.mkdirs();
                         }
                     }
                 }).start();
@@ -330,10 +378,11 @@ public class DetailActivity extends AppCompatActivity {
         return target;
     }
 
+    //Call camera functions with the path file
     private void dispatchTakePictureIntent() {
         Intent chooserIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        String pathGlobal = Environment.getExternalStorageDirectory() + File.separator + "TimeWall";
-        String path= pathGlobal+ "/"+mItem.getId()+"_test.jpg";
+        String pathGlobal = Environment.getExternalStorageDirectory() + File.separator + "TimeWall/User_photos";
+        String path= pathGlobal+ "/"+mItem.getId()+".jpg";
         mItem.setLocalPath(path);
         File f = new File(path);
         chooserIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
@@ -341,37 +390,63 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     @Override
-
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             File file = new File(mItem.getLocalFileImage());
+            //saveThumbnail
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            Bitmap image = BitmapFactory.decodeFile(mItem.getLocalFileImage(), options);
+            try {
+                createThumbFileFromBitmap(Bitmap.createScaledBitmap(image,300,300,true),mItem);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            //load image
             Picasso.with(mHeaderImageView.getContext())
                     .load(file)
                     .noFade()
                     .noPlaceholder()
                     .into(mHeaderImageView);
             //TODO update timewall json
-            //add Item Path to ITEMS
+            //add Item Path to webDefaultJson
             factory.setItemPath(mItem,mItem.getLocalFileImage());
         }
     }
 
     String mCurrentPhotoPath;
 
-    private File createImageFile() throws IOException {
-        // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        File pathGlobal = new File( Environment.getExternalStorageDirectory() + File.separator + "TimeWall");
-        String path= String.valueOf(mItem.getId());
-        File image = File.createTempFile(
-                path,  /* prefix */
-                ".jpg",         /* suffix */
-                pathGlobal      /* directory */
-        );
+    private void createThumbFileFromBitmap(final Bitmap bitmap, final Item item) throws IOException {
+        new Thread(new Runnable() {
 
-        // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = image.getAbsolutePath();
-        return image;
+            @Override
+            public void run() {
+                String pathGlobal = Environment.getExternalStorageDirectory() + File.separator + "TimeWall";
+
+                try{
+                    String path= pathGlobal+ "/User_photos/"+item.getId()+"_thumb.jpg";
+                    File file = new File(path);
+                    file.createNewFile();
+                    FileOutputStream ostream = new FileOutputStream(file);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, ostream);
+                    ostream.flush();
+                    ostream.close();
+
+                } catch (IOException e) {
+                    Log.e("IOException", e.getLocalizedMessage());
+
+                    File dirPath = new File(pathGlobal);
+                    if (!dirPath.exists())
+                        dirPath.mkdirs();
+                    dirPath = new File(pathGlobal+ "/Favorite");
+                    if (!dirPath.exists())
+                        dirPath.mkdirs();
+                    dirPath = new File(pathGlobal+ "/User_photos");
+                    if (!dirPath.exists())
+                        dirPath.mkdirs();
+                }
+            }
+        }).start();
+
     }
 
 

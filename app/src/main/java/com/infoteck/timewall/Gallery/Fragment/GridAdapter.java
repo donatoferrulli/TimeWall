@@ -6,6 +6,7 @@ package com.infoteck.timewall.Gallery.Fragment;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.util.Log;
@@ -74,7 +75,7 @@ class GridAdapter extends BaseAdapter {
         name.setText(item.getName());
 
         if(item.getLocalFileImage()==null){
-            Log.i("GridAdapter","Load image from web");
+            Log.i("GridAdapter","Load image from web "+item.getName());
             Picasso.with(view.getContext())
                     .load(item.getPhotoUrl())
 //                    .resize(500, 500)
@@ -90,18 +91,23 @@ class GridAdapter extends BaseAdapter {
                     .load(item.getPhotoUrl())
                     .into(getTarget(item,""));
         }else{
-            Log.i("GridAdapter","Load image from local storage");
-            File file = new File(item.getLocalFileImage());
-            Picasso.with(view.getContext())
-                    .load(file)
-                    .resize(500, 500)
-                    .centerInside()
-                    .into(imageView,
-                            PicassoPalette.with(item.getPhotoUrl(), imageView)
-                                    .use(PicassoPalette.Profile.VIBRANT)
-                                    .intoBackground(name, PicassoPalette.Swatch.RGB)
-                                    .intoTextColor(name, PicassoPalette.Swatch.BODY_TEXT_COLOR)
-                    );
+            Log.i("GridAdapter","Load image from local storage "+item.getName()+" "+item.getLocalFileImage().replace(".jpg","_thumb.jpg"));
+
+            File file = new File(item.getLocalFileImage().replace(".jpg","_thumb.jpg"));
+            if (file.exists()){
+                Picasso.with(view.getContext())
+                        .load(file)
+                        .into(imageView,
+                                PicassoPalette.with(item.getPhotoUrl(), imageView)
+                                        .use(PicassoPalette.Profile.VIBRANT)
+                                        .intoBackground(name, PicassoPalette.Swatch.RGB)
+                                        .intoTextColor(name, PicassoPalette.Swatch.BODY_TEXT_COLOR)
+                        );
+            }else{
+                factory.setItemPath(item,null);
+            }
+
+
         }
 
 
@@ -119,27 +125,40 @@ class GridAdapter extends BaseAdapter {
             @Override
             public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
                         String pathGlobal = Environment.getExternalStorageDirectory() + File.separator + "TimeWall";
-
+                        String path= pathGlobal+ "/"+dirPath+item.getId()+".jpg";
                         try{
-                            String path= pathGlobal+ "/"+dirPath+item.getId()+".jpg";
+
                             File file = new File(path);
                             file.createNewFile();
                             FileOutputStream ostream = new FileOutputStream(file);
                             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, ostream);
                             ostream.flush();
                             ostream.close();
+                            //create thumbnail
+                            try {
+                                createThumbFileFromBitmap(Bitmap.createScaledBitmap(bitmap,240,320,false),item);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
 
                             //add Item Path to ITEMS
                             factory.setItemPath(item,path);
-                            Log.e("GridAdapter.getTarget","Path created");
+                            Log.e("GridAdapter.getTarget","Path created:"+path);
+
+
+
 
                         } catch (Exception e) {
-                            Log.e("Exception", e.getLocalizedMessage());
+                            Log.e("Exception GridAdapter", e.getMessage());
+                            Log.e("Exception GridAdapter2", item.getName()+" "+path);
 
                             File dirPath = new File(pathGlobal);
                             if (!dirPath.exists())
                                 dirPath.mkdirs();
                             dirPath = new File(pathGlobal+ "/Favorite");
+                            if (!dirPath.exists())
+                                dirPath.mkdirs();
+                            dirPath = new File(pathGlobal+ "/User_photos");
                             if (!dirPath.exists())
                                 dirPath.mkdirs();
                         }
@@ -157,6 +176,42 @@ class GridAdapter extends BaseAdapter {
             }
         };
         return target;
+    }
+
+
+    private void createThumbFileFromBitmap(final Bitmap bitmap, final Item item) throws IOException {
+        Log.e("GridAdapter.createThumb","Create thumb: "+item.getName());
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                String pathGlobal = Environment.getExternalStorageDirectory() + File.separator + "TimeWall";
+
+                try{
+                    String path= pathGlobal+ "/"+""+item.getId()+"_thumb.jpg";
+                    File file = new File(path);
+                    file.createNewFile();
+                    FileOutputStream ostream = new FileOutputStream(file);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, ostream);
+                    ostream.flush();
+                    ostream.close();
+
+                } catch (IOException e) {
+                    Log.e("IOException", e.getLocalizedMessage());
+
+                    File dirPath = new File(pathGlobal);
+                    if (!dirPath.exists())
+                        dirPath.mkdirs();
+                    dirPath = new File(pathGlobal+ "/Favorite");
+                    if (!dirPath.exists())
+                        dirPath.mkdirs();
+                    dirPath = new File(pathGlobal+ "/User_photos");
+                    if (!dirPath.exists())
+                        dirPath.mkdirs();
+                }
+            }
+        }).start();
+
     }
 
 }

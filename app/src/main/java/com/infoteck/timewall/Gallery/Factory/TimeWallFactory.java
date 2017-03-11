@@ -120,6 +120,7 @@ public class TimeWallFactory extends AbstractItemFactory{
 
     @Override
     public void setItemPath(Item itemToEdit, String path) {
+        Log.e("setItemPath",itemToEdit.getName()+" "+path);
         boolean founded=false;
         for (Item item : items) {
             if (item.getId() == itemToEdit.getId()) {

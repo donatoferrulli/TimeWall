@@ -37,6 +37,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.StrictMode;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -52,6 +53,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
+
+import java.io.File;
 
 /**
  * Our main Activity in this sample. Displays a grid of items which an image and title. When the
@@ -153,6 +156,18 @@ public class GalleryActivity extends AppCompatActivity implements AdapterView.On
                     }
                 })
                 .build();
+
+        //CREATE FOLDER IF THEY DON'T EXIST
+        String pathGlobal = Environment.getExternalStorageDirectory() + File.separator + "TimeWall";
+        File dirPath = new File(pathGlobal);
+        if (!dirPath.exists())
+            dirPath.mkdirs();
+        dirPath = new File(pathGlobal+ "/Favorite");
+        if (!dirPath.exists())
+            dirPath.mkdirs();
+        dirPath = new File(pathGlobal+ "/User_photos");
+        if (!dirPath.exists())
+            dirPath.mkdirs();
 
 
     }
