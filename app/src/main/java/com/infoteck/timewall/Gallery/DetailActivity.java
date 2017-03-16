@@ -199,9 +199,18 @@ public class DetailActivity extends AppCompatActivity {
             public void onClick(View view) {
                 FabTransformation.with(fab)
                         .transformFrom(toolbarFooter);
-                Picasso.with(view.getContext())
-                        .load(mItem.getPhotoUrl())
-                        .into(getTarget(mItem.getId(),"Favorite/"));
+                if(mItem.getLocalFileImage()==null){
+                    Picasso.with(view.getContext())
+                            .load(mItem.getPhotoUrl())
+                            .into(getTarget(mItem.getId(),"Favorite/"));
+                }else{
+                    File file = new File(mItem.getLocalFileImage());
+                    Picasso.with(mHeaderImageView.getContext())
+                            .load(file)
+                            .into(getTarget(mItem.getId(),"Favorite/"));
+
+                }
+
                 Toast.makeText(view.getContext(),R.string.favoriteCreated,Toast.LENGTH_SHORT).show();
 
             }
@@ -343,13 +352,8 @@ public class DetailActivity extends AppCompatActivity {
 
                         try{
                                 String path= pathGlobal+ "/"+dirPath+id+".jpg";
-                                File file = new File(path);
-                                file.createNewFile();
-                                FileOutputStream ostream = new FileOutputStream(file);
-                                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, ostream);
-                                ostream.flush();
-                                ostream.close();
-
+                                createImageFileFromBitmap(bitmap,"Favorite",mItem);
+                                createThumbFileFromBitmap(Bitmap.createScaledBitmap(bitmap,240,320,false),"Favorite",mItem);
                                 //add Item Path to ITEMS
                                 factory.setItemPath(mItem,path);
 
@@ -403,7 +407,7 @@ public class DetailActivity extends AppCompatActivity {
             BitmapFactory.Options options = new BitmapFactory.Options();
             Bitmap image = BitmapFactory.decodeFile(mItem.getLocalFileImage(), options);
             try {
-                createThumbFileFromBitmap(Bitmap.createScaledBitmap(image,300,300,true),mItem);
+                createThumbFileFromBitmap(Bitmap.createScaledBitmap(image,300,300,true),"User_photos",mItem);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -432,8 +436,8 @@ public class DetailActivity extends AppCompatActivity {
                 mHeaderImageView.setImageBitmap(bitmap);
                 try {
                     //TODO refactor functions check if file exists
-                    createImageFileFromBitmap(bitmap,mItem);
-                    createThumbFileFromBitmap(Bitmap.createScaledBitmap(bitmap,240,320,false),mItem);
+                    createImageFileFromBitmap(bitmap,"User_photos",mItem);
+                    createThumbFileFromBitmap(Bitmap.createScaledBitmap(bitmap,240,320,false),"User_photos",mItem);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -448,7 +452,7 @@ public class DetailActivity extends AppCompatActivity {
 
     String mCurrentPhotoPath;
 
-    private void createThumbFileFromBitmap(final Bitmap bitmap, final Item item) throws IOException {
+    private void createThumbFileFromBitmap(final Bitmap bitmap, final String subfoldername, final Item item) throws IOException {
         Log.e("createThumbFileBitmap",item.getName());
         new Thread(new Runnable() {
 
@@ -457,7 +461,7 @@ public class DetailActivity extends AppCompatActivity {
                 String pathGlobal = Environment.getExternalStorageDirectory() + File.separator + "TimeWall";
 
                 try{
-                    String path= pathGlobal+ "/User_photos/"+item.getId()+"_thumb.jpg";
+                    String path= pathGlobal+ "/"+subfoldername+"/"+item.getId()+"_thumb.jpg";
                     File file = new File(path);
                     file.createNewFile();
                     FileOutputStream ostream = new FileOutputStream(file);
@@ -483,7 +487,7 @@ public class DetailActivity extends AppCompatActivity {
 
     }
 
-    private void createImageFileFromBitmap(final Bitmap bitmap, final Item item) throws IOException {
+    private void createImageFileFromBitmap(final Bitmap bitmap, final String subfoldername, final Item item) throws IOException {
         Log.e("createImageFileBitmap",item.getName());
         new Thread(new Runnable() {
 
@@ -492,7 +496,7 @@ public class DetailActivity extends AppCompatActivity {
                 String pathGlobal = Environment.getExternalStorageDirectory() + File.separator + "TimeWall";
 
                 try{
-                    String path= pathGlobal+ "/User_photos/"+item.getId()+".jpg";
+                    String path= pathGlobal+ "/"+subfoldername+"/"+item.getId()+"_thumb.jpg";
                     File file = new File(path);
                     file.createNewFile();
                     FileOutputStream ostream = new FileOutputStream(file);

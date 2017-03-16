@@ -63,6 +63,10 @@ public class alarmCalendar extends BroadcastReceiver {
                         .setSmallIcon(R.mipmap.ic_launcher)
                         .setContentTitle(context.getResources().getString(R.string.calendarNotification))
                         .setContentText(context.getResources().getString(R.string.calendarNotificationContent));
+        NotificationManager mNotificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        // mId allows you to update the notification later on.
+        mNotificationManager.notify(notificationID, mBuilder.build());
         
     }
 

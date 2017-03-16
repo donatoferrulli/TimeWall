@@ -81,7 +81,10 @@ public class FavoriteFragment extends Fragment  implements AdapterView.OnItemCli
     @Override
     public void onResume() {
         super.onResume();
-        mAdapter.notifyDataSetChanged();
+        if (mAdapter!=null){
+            mAdapter.notifyDataSetChanged();
+        }
+
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if(ContextCompat.checkSelfPermission(getActivity(),android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {

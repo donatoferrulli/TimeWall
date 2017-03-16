@@ -34,11 +34,17 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
+import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -46,8 +52,10 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.util.Pair;
 import android.support.v4.view.LayoutInflaterCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
@@ -55,6 +63,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Our main Activity in this sample. Displays a grid of items which an image and title. When the
@@ -157,17 +166,28 @@ public class GalleryActivity extends AppCompatActivity implements AdapterView.On
                 })
                 .build();
 
-        //CREATE FOLDER IF THEY DON'T EXIST
-        String pathGlobal = Environment.getExternalStorageDirectory() + File.separator + "TimeWall";
-        File dirPath = new File(pathGlobal);
-        if (!dirPath.exists())
-            dirPath.mkdirs();
-        dirPath = new File(pathGlobal+ "/Favorite");
-        if (!dirPath.exists())
-            dirPath.mkdirs();
-        dirPath = new File(pathGlobal+ "/User_photos");
-        if (!dirPath.exists())
-            dirPath.mkdirs();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if(ContextCompat.checkSelfPermission(this,android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+                alertBuilder.setCancelable(true);
+                alertBuilder.setTitle(R.string.permissionTitle);
+                alertBuilder.setMessage(R.string.permissionStorage);
+                alertBuilder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.M)
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                    }
+                });
+
+                AlertDialog alert = alertBuilder.create();
+                alert.show();
+            }
+        }
+
+
+
+
 
 
     }
@@ -211,5 +231,32 @@ public class GalleryActivity extends AppCompatActivity implements AdapterView.On
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
+    }
+
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (ActivityCompat.checkSelfPermission(this, permissions[0]) == PackageManager.PERMISSION_GRANTED) {
+
+            switch (requestCode) {
+                case 1:
+                    //CREATE FOLDER IF THEY DON'T EXIST
+                    String pathGlobal = Environment.getExternalStorageDirectory() + File.separator + "TimeWall";
+                    File dirPath = new File(pathGlobal);
+                    if (!dirPath.exists())
+                        dirPath.mkdirs();
+                    dirPath = new File(pathGlobal+ "/Favorite");
+                    if (!dirPath.exists())
+                        dirPath.mkdirs();
+                    dirPath = new File(pathGlobal+ "/User_photos");
+                    if (!dirPath.exists())
+                        dirPath.mkdirs();
+                    break;
+            }
+        }else{
+            Log.e("onRequestPermissions","no");
+        }
     }
 }

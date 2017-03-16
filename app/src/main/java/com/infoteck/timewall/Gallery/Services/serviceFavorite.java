@@ -1,6 +1,7 @@
 package com.infoteck.timewall.Gallery.Services;
 
 import android.app.AlarmManager;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -31,6 +32,8 @@ import java.util.logging.Logger;
  */
 
 public class serviceFavorite extends Service {
+    private AlarmManager manager;
+    private PendingIntent pendingIntent;
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -41,12 +44,22 @@ public class serviceFavorite extends Service {
         SharedPreferences prefs = getSharedPreferences("favoritePreferences", Context.MODE_PRIVATE);
         long interval =prefs.getLong("Interval",1800000);
         Intent alarmIntent = new Intent(getApplicationContext(), alarmFavorite.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, alarmIntent, 0);
+        pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, alarmIntent, 0);
 
-        AlarmManager manager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+        manager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
         manager.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
 
         Log.e("serviceFavorite","setted alarm");
+
+    }
+
+    public void onDestroy()
+    {
+        super.onDestroy();
+        //destroy alarm
+        manager.cancel(pendingIntent);
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.cancelAll();
 
     }
 }

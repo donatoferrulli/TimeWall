@@ -56,7 +56,7 @@
     <string name="connectionProblem">Connection problem</string>
     <string name="noCityFound">No city found</string>
     <string name="permissionTitle">Permission necessary</string>
-    <string name="permissionStorage">I need to read storage to view favorites. Please grant it.</string>
+    <string name="permissionStorage">I need to read storage to save images. Please grant it.</string>
     <string name="permissionCamera">I need to be able to use camera. Please grant me permission.</string>
     <string name="calendarNotification">Calendar activated</string>
     <string name="calendarNotificationContent">to do</string>

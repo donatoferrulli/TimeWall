@@ -48,7 +48,7 @@ public class Item {
     }
 
     public int getId() {
-        int hashCode = (mPhotoUrl.equals(""))? Integer.parseInt(mName): Math.abs(mPhotoUrl.hashCode());
+        int hashCode = (mPhotoUrl.equals(""))? Integer.parseInt(mName.replace("_thumb","")): Math.abs(mPhotoUrl.hashCode());
 
         return hashCode;
     }
