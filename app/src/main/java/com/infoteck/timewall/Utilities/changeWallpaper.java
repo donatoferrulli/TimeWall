@@ -7,6 +7,7 @@ import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 
@@ -65,10 +66,18 @@ public class changeWallpaper extends AsyncTask<String, String, Void> {
                         .get();
             }else{
                 File file = new File(args[0]);
-                result= Picasso.with(mContext)
-                        .load(file)
-                        .resize(widthPixels,heightPixels)
-                        .get();
+                if(file.exists()){
+                    result= Picasso.with(mContext)
+                            .load(file)
+                            .get();
+                }else{
+                    Log.e("Changewallpaper","file don't exists");
+                    result= Picasso.with(mContext)
+                            .load(args[0])
+                            .resize(widthPixels,heightPixels)
+                            .get();
+                }
+
             }
 
             WallpaperManager wallpaperManager = WallpaperManager.getInstance(mContext);

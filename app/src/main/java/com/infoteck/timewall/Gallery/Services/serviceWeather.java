@@ -46,7 +46,8 @@ public class serviceWeather extends Service {
         pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, alarmIntent, 0);
 
         manager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-        manager.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
+        manager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pendingIntent);
+        manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
 
         Log.e("serviceWeather","setted alarm");
 
