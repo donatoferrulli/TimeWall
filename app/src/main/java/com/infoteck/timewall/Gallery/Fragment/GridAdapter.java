@@ -136,7 +136,7 @@ class GridAdapter extends BaseAdapter {
                             ostream.close();
                             //create thumbnail
                             try {
-                                createThumbFileFromBitmap(Bitmap.createScaledBitmap(bitmap,240,320,false),item);
+                                createThumbFileFromBitmap(Bitmap.createScaledBitmap(bitmap,225,400,false),item);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }

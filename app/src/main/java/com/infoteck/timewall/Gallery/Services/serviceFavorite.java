@@ -47,6 +47,7 @@ public class serviceFavorite extends Service {
         pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, alarmIntent, 0);
 
         manager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+        manager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pendingIntent);
         manager.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
 
         Log.e("serviceFavorite","setted alarm");

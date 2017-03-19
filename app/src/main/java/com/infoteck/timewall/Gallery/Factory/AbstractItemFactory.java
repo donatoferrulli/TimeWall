@@ -50,7 +50,7 @@ public abstract class AbstractItemFactory {
             File file = new File(path);
             String [] imagesPath=file.list();
             for (String fileName : imagesPath) {
-                if (fileName.toLowerCase().endsWith(".jpg")) {
+                if (fileName.toLowerCase().endsWith(".jpg") && !fileName.toLowerCase().contains("_thumb")) {
                     items.add(new Item(fileName.replace(".jpg",""), "" ,"",path+File.separator+fileName));
                 }
             }

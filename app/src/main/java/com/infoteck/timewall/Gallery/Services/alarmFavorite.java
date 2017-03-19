@@ -43,5 +43,16 @@ public class alarmFavorite extends BroadcastReceiver {
             currentItem++;
         }       
         new changeWallpaper(context).execute(items.get(currentItem).getLocalFileImage());
+        //create notification
+        int notificationID= 12;
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(context)
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentTitle(context.getResources().getString(R.string.favoriteNotification))
+                        .setContentText(context.getResources().getString(R.string.favoriteNotificationContent));
+        NotificationManager mNotificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        // mId allows you to update the notification later on.
+        mNotificationManager.notify(notificationID, mBuilder.build());
     }
 }

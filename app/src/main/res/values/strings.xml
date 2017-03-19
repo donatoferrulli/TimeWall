@@ -60,5 +60,7 @@
     <string name="permissionCamera">I need to be able to use camera. Please grant me permission.</string>
     <string name="calendarNotification">Calendar activated</string>
     <string name="calendarNotificationContent">to do</string>
+    <string name="favoriteNotification">Favorites activated</string>
+    <string name="favoriteNotificationContent">to do</string>
 
 </resources>
