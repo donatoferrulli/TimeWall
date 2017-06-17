@@ -27,12 +27,12 @@ import java.util.List;
  * Created by Pc on 31/12/2016.
  */
 
-public class RandomFragment extends Fragment implements AdapterView.OnItemClickListener{
+public class AssistantFragment extends Fragment implements AdapterView.OnItemClickListener{
 	private GridView mGridView;
     private GridAdapter mAdapter;
     private AbstractItemFactory factory;
 
-    public RandomFragment() {
+    public AssistantFragment() {
     }
 
     @Override

@@ -36,8 +36,8 @@
         <receiver android:name=".Gallery.Services.alarmWeather" />
         <service android:name=".Gallery.Services.serviceFavorite" />
         <receiver android:name=".Gallery.Services.alarmFavorite" />
-        <service android:name=".Gallery.Services.serviceRandom" />
-        <receiver android:name=".Gallery.Services.alarmRandom" />
+        <service android:name=".Gallery.Services.serviceAssistant" />
+        <receiver android:name=".Gallery.Services.alarmAssistant" />
 
     </application>
 

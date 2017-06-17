@@ -20,7 +20,7 @@ import com.infoteck.timewall.Gallery.Factory.Item;
 import com.infoteck.timewall.Gallery.Fragment.CalendarFragment;
 import com.infoteck.timewall.Gallery.Fragment.FavoriteFragment;
 import com.infoteck.timewall.Gallery.Fragment.HomeFragment;
-import com.infoteck.timewall.Gallery.Fragment.RandomFragment;
+import com.infoteck.timewall.Gallery.Fragment.AssistantFragment;
 import com.infoteck.timewall.Gallery.Fragment.SettingsFragment;
 import com.infoteck.timewall.Gallery.Fragment.WeatherFragment;
 import com.infoteck.timewall.R;
@@ -63,7 +63,6 @@ import android.widget.GridView;
 import android.widget.ImageView;
 
 import java.io.File;
-import java.util.List;
 
 /**
  * Our main Activity in this sample. Displays a grid of items which an image and title. When the
@@ -113,7 +112,7 @@ public class GalleryActivity extends AppCompatActivity implements AdapterView.On
         PrimaryDrawerItem calendar = new PrimaryDrawerItem().withIdentifier(2).withName(R.string.calendar).withIcon(GoogleMaterial.Icon.gmd_event);
         PrimaryDrawerItem weather = new PrimaryDrawerItem().withIdentifier(3).withName(R.string.weather).withIcon(GoogleMaterial.Icon.gmd_wb_sunny);
         PrimaryDrawerItem favorite = new PrimaryDrawerItem().withIdentifier(4).withName(R.string.favorite).withIcon(GoogleMaterial.Icon.gmd_favorite);
-        PrimaryDrawerItem random = new PrimaryDrawerItem().withIdentifier(5).withName(R.string.random).withIcon(GoogleMaterial.Icon.gmd_shuffle);
+        //PrimaryDrawerItem assistant = new PrimaryDrawerItem().withIdentifier(5).withName(R.string.assistant).withIcon(GoogleMaterial.Icon.gmd_assistant);
         PrimaryDrawerItem settings = new PrimaryDrawerItem().withIdentifier(6).withName(R.string.settings).withIcon(GoogleMaterial.Icon.gmd_settings);
 
         //create the drawer and remember the `Drawer` result object
@@ -121,7 +120,7 @@ public class GalleryActivity extends AppCompatActivity implements AdapterView.On
                 .withActivity(this)
                 .withToolbar(toolbar)
                 .withAccountHeader(headerResult)
-                .addDrawerItems(home,calendar,weather,favorite,random,new DividerDrawerItem(),settings)
+                .addDrawerItems(home,calendar,weather,favorite,new DividerDrawerItem(),settings)
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
@@ -149,11 +148,11 @@ public class GalleryActivity extends AppCompatActivity implements AdapterView.On
                                 collapsingToolbarLayout.setTitle(getResources().getString(R.string.favorite));
                                 getFragmentManager().beginTransaction().replace(R.id.container,new FavoriteFragment()).commit();
                                 break;
+                            /*case 5:
+                                collapsingToolbarLayout.setTitle(getResources().getString(R.string.assistant));
+                                getFragmentManager().beginTransaction().replace(R.id.container,new AssistantFragment()).commit();
+                                break;*/
                             case 5:
-                                collapsingToolbarLayout.setTitle(getResources().getString(R.string.random));
-                                getFragmentManager().beginTransaction().replace(R.id.container,new RandomFragment()).commit();
-                                break;
-                            case 6:
                                 collapsingToolbarLayout.setTitle(getResources().getString(R.string.settings));
                                 getFragmentManager().beginTransaction().replace(R.id.container,new SettingsFragment()).commit();
                                 break;

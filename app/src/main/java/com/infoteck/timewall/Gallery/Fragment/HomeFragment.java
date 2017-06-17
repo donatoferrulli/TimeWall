@@ -6,8 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
@@ -27,8 +25,8 @@ import static com.infoteck.timewall.Gallery.GalleryActivity.result;
 
 public class HomeFragment extends Fragment   {
 
-	SwitchCompat switchCalendar,switchWeather,switchFavorite,switchRandom;
-    CardView cardCalendar,cardWeather,cardFavorite,cardRandom;
+	SwitchCompat switchCalendar,switchWeather,switchFavorite,switchAssistant;
+    CardView cardCalendar,cardWeather,cardFavorite,cardAssistant;
 
     public HomeFragment() {
     }
@@ -42,7 +40,7 @@ public class HomeFragment extends Fragment   {
         cardCalendar=(CardView)rootView.findViewById(R.id.cardCalendar);
         cardWeather=(CardView)rootView.findViewById(R.id.cardWeather);
         cardFavorite=(CardView)rootView.findViewById(R.id.cardFavorite);
-        cardRandom=(CardView)rootView.findViewById(R.id.cardRandom);
+        cardAssistant=(CardView)rootView.findViewById(R.id.cardAssistant);
 
         cardCalendar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,17 +60,17 @@ public class HomeFragment extends Fragment   {
                 result.setSelectionAtPosition(4);
             }
         });
-        cardRandom.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                result.setSelectionAtPosition(5);
-            }
-        });
+//        cardAssistant.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                result.setSelectionAtPosition(5);
+//            }
+//        });
 
         switchCalendar=(SwitchCompat)rootView.findViewById(R.id.switchCalendar);
         switchWeather=(SwitchCompat)rootView.findViewById(R.id.switchWeather);
         switchFavorite=(SwitchCompat)rootView.findViewById(R.id.switchFavorite);
-        switchRandom=(SwitchCompat)rootView.findViewById(R.id.switchRandom);
+        switchAssistant=(SwitchCompat)rootView.findViewById(R.id.switchAssistant);
 
         loadCurrentServiceState();
 
@@ -117,16 +115,22 @@ public class HomeFragment extends Fragment   {
                 }
             }
         });
-        switchRandom.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        switchAssistant.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                switchCalendar.setChecked(false);
+                getActivity().stopService(new Intent(getActivity(),serviceCalendar.class));
+                switchFavorite.setChecked(false);
+                getActivity().stopService(new Intent(getActivity(),serviceFavorite.class));
+                switchWeather.setChecked(false);
+                getActivity().stopService(new Intent(getActivity(),serviceWeather.class));
                 Context context = buttonView.getContext();
                 if(isChecked){
-                     Toast.makeText(context, R.string.switchRandomActive, Toast.LENGTH_SHORT).show();
-                    getActivity().startService(new Intent(getActivity(),serviceRandom.class));
+                     Toast.makeText(context, R.string.switchAssistantActive, Toast.LENGTH_SHORT).show();
+                    getActivity().startService(new Intent(getActivity(),serviceAssistant.class));
                 }else{
-                     Toast.makeText(context, R.string.switchRandomNotActive, Toast.LENGTH_SHORT).show();
-                    getActivity().stopService(new Intent(getActivity(),serviceRandom.class));
+                     Toast.makeText(context, R.string.switchAssistantNotActive, Toast.LENGTH_SHORT).show();
+                    getActivity().stopService(new Intent(getActivity(),serviceAssistant.class));
                 }
             }
         });
@@ -140,7 +144,7 @@ public class HomeFragment extends Fragment   {
     private void loadCurrentServiceState() {
         if (isServiceRunning("com.infoteck.timewall.Gallery.Services.serviceCalendar")) switchCalendar.setChecked(true);  else  switchCalendar.setChecked(false);
         if (isServiceRunning("com.infoteck.timewall.Gallery.Services.serviceFavorite")) switchFavorite.setChecked(true);  else  switchFavorite.setChecked(false);
-        if (isServiceRunning("com.infoteck.timewall.Gallery.Services.serviceRandom")) switchRandom.setChecked(true);  else  switchRandom.setChecked(false);
+        if (isServiceRunning("com.infoteck.timewall.Gallery.Services.serviceAssistant")) switchAssistant.setChecked(true);  else  switchAssistant.setChecked(false);
         if (isServiceRunning("com.infoteck.timewall.Gallery.Services.serviceWeather")) switchWeather.setChecked(true);  else  switchWeather.setChecked(false);
         //// TODO: 29/01/2017 other services 
     }

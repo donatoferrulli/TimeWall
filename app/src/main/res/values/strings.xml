@@ -48,8 +48,8 @@
     <string name="switchWeatherNotActive">Service weather stopped</string>
     <string name="switchFavoriteActive">Service favorite started</string>
     <string name="switchFavoriteNotActive">Service favorite stopped</string>
-    <string name="switchRandomActive">Service random started</string>
-    <string name="switchRandomNotActive">Service random stopped</string>
+    <string name="switchAssistantActive">Service Assistant started</string>
+    <string name="switchAssistantNotActive">Service Assistant stopped</string>
     <string name="searchLocation">Searching location</string>
     <string name="please_wait">Please wait</string>
     <string name="locationFounded">Location founded</string>
@@ -62,5 +62,7 @@
     <string name="calendarNotificationContent">to do</string>
     <string name="favoriteNotification">Favorites activated</string>
     <string name="favoriteNotificationContent">to do</string>
+    <string name="assistant">Assistant</string>
+    <string name="descriptionAssistant">Automatic new images from all services</string>
 
 </resources>

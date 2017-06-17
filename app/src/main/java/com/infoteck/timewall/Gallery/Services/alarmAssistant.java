@@ -28,21 +28,21 @@ import java.util.Locale;
  * This BroadcastReceiver receive intent from WeatherService and update the weather and the wallpaper.
  */
 
-public class alarmRandom extends BroadcastReceiver {
+public class alarmAssistant extends BroadcastReceiver {
     static int currentItem=0;
     @Override
     public void onReceive(final Context context, Intent intent) {
-        Log.e("alarmRandom","Update wallpaper");
+        Log.e("alarmAssistant","Update wallpaper");
         SharedPreferences prefs = context.getSharedPreferences("randomPreferences", Context.MODE_PRIVATE);    
         SharedPreferences.Editor editor = prefs.edit();
         AbstractItemFactory factory = AbstractItemFactory.getAbstractItemFactory("TimeWall",context);
-        List<Item> items= factory.getRandomLocalItem("");
-        //// TODO: 01/02/2017 get path for getRandomLocalItem 
-        if (items.size()>currentItem) {
-            currentItem=0;
-        }else {
-            currentItem++;
-        }       
-        new changeWallpaper(context).execute(items.get(currentItem).getLocalFileImage());
+//        List<Item> items= factory.getRandomLocalItem("");
+//        //// TODO: 01/02/2017 get path for getRandomLocalItem
+//        if (items.size()>currentItem) {
+//            currentItem=0;
+//        }else {
+//            currentItem++;
+//        }
+//        new changeWallpaper(context).execute(items.get(currentItem).getLocalFileImage());
     }
 }

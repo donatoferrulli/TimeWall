@@ -34,10 +34,13 @@ public class TimeWallFactory extends AbstractItemFactory{
             webDefaultJson= new JSONObject(sharedPref.getString("webDefaultJson","{}"));
             if(webDefaultJson.length()==0){
                 webDefaultJson  = new jsonFromUrl().execute("https://api.myjson.com/bins/1e6ybf").get();
-                String str = webDefaultJson.toString();
-                SharedPreferences.Editor prefEditor = context.getSharedPreferences( "appData", Context.MODE_PRIVATE).edit();
-                prefEditor.putString( "webDefaultJson", str );
-                prefEditor.commit();
+                if(webDefaultJson!=null){
+                    String str = webDefaultJson.toString();
+                    SharedPreferences.Editor prefEditor = context.getSharedPreferences( "appData", Context.MODE_PRIVATE).edit();
+                    prefEditor.putString( "webDefaultJson", str );
+                    prefEditor.commit();
+                }
+
             }
 
             //TODO check version and update local storage
