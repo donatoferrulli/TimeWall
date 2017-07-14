@@ -154,12 +154,11 @@ public class GalleryActivity extends AppCompatActivity implements AdapterView.On
                                 imageView.setBackground(ContextCompat.getDrawable(getApplication(), R.drawable.weather_background));
                                 break;
                             case 4:
-                                collapsingToolbarLayout.setTitle(getResources().getString(R.string.favorite));
-                                fabStart.setVisibility(View.VISIBLE);
-                                subTitle.setText("");
                                 AbstractItemFactory factory= AbstractItemFactory.getAbstractItemFactory("TimeWall",getApplication());
-
                                 if(factory.getFavoriteItem().size()>0){
+                                    collapsingToolbarLayout.setTitle(getResources().getString(R.string.favorite));
+                                    fabStart.setVisibility(View.VISIBLE);
+                                    subTitle.setText("");
                                     getFragmentManager().beginTransaction().replace(R.id.container,new FavoriteFragment()).commit();
                                 }else{
                                     Toast.makeText(getApplication(),R.string.favorite_not_found,Toast.LENGTH_SHORT).show();
