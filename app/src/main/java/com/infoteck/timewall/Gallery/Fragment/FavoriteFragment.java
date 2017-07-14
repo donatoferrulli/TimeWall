@@ -2,9 +2,13 @@ package com.infoteck.timewall.Gallery.Fragment;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -21,14 +25,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import com.infoteck.timewall.Gallery.DetailActivity;
 import com.infoteck.timewall.Gallery.DetailActivityFavorite;
 import com.infoteck.timewall.Gallery.Factory.AbstractItemFactory;
 import com.infoteck.timewall.Gallery.Factory.Item;
+import com.infoteck.timewall.Gallery.Services.serviceFavorite;
 import com.infoteck.timewall.R;
+import com.mikepenz.google_material_typeface_library.GoogleMaterial;
+import com.mikepenz.iconics.IconicsDrawable;
 
 import java.util.List;
+
+import static com.infoteck.timewall.Gallery.GalleryActivity.fabStart;
 
 /**
  * Created by Pc on 31/12/2016.
@@ -38,6 +48,7 @@ public class FavoriteFragment extends Fragment  implements AdapterView.OnItemCli
     private GridView mGridView;
     private GridAdapter mAdapter;
     private AbstractItemFactory factory ;
+    Boolean service_status;
 
     public FavoriteFragment() {
     }
@@ -45,16 +56,65 @@ public class FavoriteFragment extends Fragment  implements AdapterView.OnItemCli
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.grid, container, false);
+        final View rootView = inflater.inflate(R.layout.grid, container, false);
         factory = AbstractItemFactory.getAbstractItemFactory("TimeWall",rootView.getContext());
         //Setup the GridView and set the adapter
         mGridView = (GridView) rootView.findViewById(R.id.grid);
+        mGridView.setBackgroundColor(getResources().getColor(R.color.homeActivity));
         mGridView.setNestedScrollingEnabled(true);
         mGridView.setOnItemClickListener(this);
+
+        if (isMyServiceRunning(serviceFavorite.class)){
+            fabStart.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.onColor)));
+            fabStart.setImageDrawable(new IconicsDrawable(rootView.getContext())
+                    .icon(GoogleMaterial.Icon.gmd_flash_on)
+                    .color(Color.WHITE)
+                    .sizeDp(24));
+        }else{
+            fabStart.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.offColor)));
+            fabStart.setImageDrawable(new IconicsDrawable(rootView.getContext())
+                    .icon(GoogleMaterial.Icon.gmd_flash_off)
+                    .color(Color.WHITE)
+                    .sizeDp(24));
+        }
+        fabStart.setVisibility(View.VISIBLE);
+
+        fabStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                service_status=isMyServiceRunning(serviceFavorite.class);
+                if (service_status) {
+                    Intent intent = new Intent();
+                    intent.setClass(getActivity(), serviceFavorite.class);
+                    getActivity().stopService(intent);
+                    Log.e("fab","Stop calendar service");
+                    fabStart.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.offColor)));
+                    fabStart.setImageDrawable(new IconicsDrawable(rootView.getContext())
+                            .icon(GoogleMaterial.Icon.gmd_flash_off)
+                            .color(Color.WHITE)
+                            .sizeDp(24));
+                    Toast.makeText(rootView.getContext(),R.string.switchFavoriteNotActive,Toast.LENGTH_SHORT).show();
+                }else{
+                    Intent intent = new Intent();
+                    intent.setClass(getActivity(), serviceFavorite.class);
+                    getActivity().startService(intent);
+                    Log.e("fab","Start calendar service");
+                    fabStart.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.onColor)));
+                    fabStart.setImageDrawable(new IconicsDrawable(rootView.getContext())
+                            .icon(GoogleMaterial.Icon.gmd_flash_on)
+                            .color(Color.WHITE)
+                            .sizeDp(24));
+                    Toast.makeText(rootView.getContext(),R.string.switchFavoriteActive,Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
 
         return rootView;
 
     }
+
+
 
 
     @Override
@@ -145,6 +205,18 @@ public class FavoriteFragment extends Fragment  implements AdapterView.OnItemCli
         ActivityCompat.startActivity(getActivity(), intent, activityOptions.toBundle());
         // END_INCLUDE(start_activity)
     }
+
+    //TODO: IMPLEMENT IN UTILS
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getActivity().getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
 
 }

@@ -67,5 +67,6 @@
     <string name="settings_notification_summary">Shows notification when wallpaper changes.</string>
     <string name="settings_notification_key">Notification</string>
     <string name="settings_notification_title">Notification</string>
+    <string name="favorite_not_found">You don\'t have any favorite</string>
 
 </resources>

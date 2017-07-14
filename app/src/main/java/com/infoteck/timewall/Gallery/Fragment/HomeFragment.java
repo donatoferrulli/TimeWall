@@ -17,6 +17,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.Toast;
+
+import com.infoteck.timewall.Gallery.Factory.AbstractItemFactory;
 import com.infoteck.timewall.Gallery.Services.*;
 import com.infoteck.timewall.R;
 
@@ -114,8 +116,15 @@ public class HomeFragment extends Fragment   {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 Context context = buttonView.getContext();
                 if(isChecked){
-                     Toast.makeText(context, R.string.switchFavoriteActive, Toast.LENGTH_SHORT).show();
-                    getActivity().startService(new Intent(getActivity(),serviceFavorite.class));
+                    AbstractItemFactory factory= AbstractItemFactory.getAbstractItemFactory("TimeWall",getActivity());
+                    if(factory.getFavoriteItem().size()>0){
+                        Toast.makeText(context, R.string.switchFavoriteActive, Toast.LENGTH_SHORT).show();
+                        getActivity().startService(new Intent(getActivity(),serviceFavorite.class));
+                    }else{
+                        Toast.makeText(getActivity(),R.string.favorite_not_found,Toast.LENGTH_SHORT).show();
+                        switchFavorite.setChecked(false);
+                    }
+
                 }else{
                      Toast.makeText(context, R.string.switchFavoriteNotActive, Toast.LENGTH_SHORT).show();
                     getActivity().stopService(new Intent(getActivity(),serviceFavorite.class));

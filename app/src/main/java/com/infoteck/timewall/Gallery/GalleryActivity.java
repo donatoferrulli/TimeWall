@@ -16,6 +16,7 @@
 
 package com.infoteck.timewall.Gallery;
 
+import com.infoteck.timewall.Gallery.Factory.AbstractItemFactory;
 import com.infoteck.timewall.Gallery.Factory.Item;
 import com.infoteck.timewall.Gallery.Fragment.CalendarFragment;
 import com.infoteck.timewall.Gallery.Fragment.FavoriteFragment;
@@ -63,6 +64,7 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 
@@ -153,8 +155,16 @@ public class GalleryActivity extends AppCompatActivity implements AdapterView.On
                                 break;
                             case 4:
                                 collapsingToolbarLayout.setTitle(getResources().getString(R.string.favorite));
+                                fabStart.setVisibility(View.VISIBLE);
                                 subTitle.setText("");
-                                getFragmentManager().beginTransaction().replace(R.id.container,new FavoriteFragment()).commit();
+                                AbstractItemFactory factory= AbstractItemFactory.getAbstractItemFactory("TimeWall",getApplication());
+
+                                if(factory.getFavoriteItem().size()>0){
+                                    getFragmentManager().beginTransaction().replace(R.id.container,new FavoriteFragment()).commit();
+                                }else{
+                                    Toast.makeText(getApplication(),R.string.favorite_not_found,Toast.LENGTH_SHORT).show();
+                                }
+
                                 break;
                             /*case 5:
                                 collapsingToolbarLayout.setTitle(getResources().getString(R.string.assistant));
