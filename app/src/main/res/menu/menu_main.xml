@@ -2,17 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_home"
-            app:ico_icon="gmd-delete"
-            android:title="Home" />
-        <item
-            android:id="@+id/nav_messages"
-            app:ico_icon="gmd-delete"
-            android:title="Messages" />
-
-    </group>
+            android:id="@+id/settings"
+            app:ico_icon="gmd-settings"
+            android:title="Settings" />
 
 
 

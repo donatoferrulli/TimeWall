@@ -32,7 +32,7 @@ public class alarmAssistant extends BroadcastReceiver {
     static int currentItem=0;
     @Override
     public void onReceive(final Context context, Intent intent) {
-        Log.e("alarmAssistant","Update wallpaper");
+        Log.e("alarmAssistant","Update wallpaper... local image in the future?");
         SharedPreferences prefs = context.getSharedPreferences("randomPreferences", Context.MODE_PRIVATE);    
         SharedPreferences.Editor editor = prefs.edit();
         AbstractItemFactory factory = AbstractItemFactory.getAbstractItemFactory("TimeWall",context);

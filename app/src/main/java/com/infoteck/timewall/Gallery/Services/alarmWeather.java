@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
@@ -26,6 +27,8 @@ import com.survivingwithandroid.weather.lib.provider.openweathermap.Openweatherm
 import com.survivingwithandroid.weather.lib.request.WeatherRequest;
 import java.util.List;
 import java.util.Locale;
+
+import static com.infoteck.timewall.Gallery.GalleryActivity.collapsingToolbarLayout;
 
 /**
  * Created by Pc on 29/01/2017.
@@ -77,13 +80,22 @@ public class alarmWeather extends BroadcastReceiver {
 
                             }
 
+                            //UPDATE WEATHER FRAGMENT VALUE
+                            SharedPreferences prefs = context.getSharedPreferences("weatherPreferences", Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = prefs.edit();
+                            editor.putString("WeatherConditions", weather.currentCondition.getDescr()+" - "+Math.floor(weather.temperature.getTemp()*10)/10+" °C");
+                            editor.commit();
+
                             //TODO check if notifications are enabled
+
+                        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+                        if (settings.getBoolean("Notification", true)) {
                             int notificationID= 12;
                             NotificationCompat.Builder mBuilder =
                                     new NotificationCompat.Builder(context)
-                                    .setSmallIcon(R.mipmap.ic_launcher)
-                                    .setContentTitle(weather.location.getCity()+" - "+Math.floor(weather.temperature.getTemp()*10)/10+" °C")
-                                    .setContentText(weather.currentCondition.getDescr());
+                                            .setSmallIcon(R.mipmap.ic_launcher)
+                                            .setContentTitle(weather.location.getCity()+" - "+Math.floor(weather.temperature.getTemp()*10)/10+" °C")
+                                            .setContentText(weather.currentCondition.getDescr());
                             // Creates an explicit intent for an Activity in your app
                             Intent resultIntent = new Intent(context, GalleryActivity.class);
 
@@ -98,14 +110,17 @@ public class alarmWeather extends BroadcastReceiver {
                             stackBuilder.addNextIntent(resultIntent);
                             PendingIntent resultPendingIntent =
                                     stackBuilder.getPendingIntent(
-                                        0,
-                                        PendingIntent.FLAG_UPDATE_CURRENT
+                                            0,
+                                            PendingIntent.FLAG_UPDATE_CURRENT
                                     );
                             mBuilder.setContentIntent(resultPendingIntent);
                             NotificationManager mNotificationManager =
-                                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                                    (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
                             // mId allows you to update the notification later on.
                             mNotificationManager.notify(notificationID, mBuilder.build());
+                        }
+
+
 
                     }
                 }

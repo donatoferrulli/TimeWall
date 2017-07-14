@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -47,7 +48,9 @@ import com.survivingwithandroid.weather.lib.provider.openweathermap.Openweatherm
 import java.util.List;
 import java.util.Locale;
 
+import static com.infoteck.timewall.Gallery.GalleryActivity.collapsingToolbarLayout;
 import static com.infoteck.timewall.Gallery.GalleryActivity.fabStart;
+import static com.infoteck.timewall.Gallery.GalleryActivity.subTitle;
 
 /**
  * Created by Pc on 31/12/2016.
@@ -70,8 +73,13 @@ public class WeatherFragment extends Fragment  implements AdapterView.OnItemClic
         setHasOptionsMenu(true);
         //Setup the GridView and set the adapter
         mGridView = (GridView) rootView.findViewById(R.id.grid);
+        mGridView.setBackgroundColor(getResources().getColor(R.color.weatherActivity));
         mGridView.setNestedScrollingEnabled(true);
         mGridView.setOnItemClickListener(this);
+
+        SharedPreferences prefs = getActivity().getSharedPreferences("weatherPreferences", Context.MODE_PRIVATE);
+        collapsingToolbarLayout.setTitle(prefs.getString("WeatherCity","Weather"));
+        subTitle.setText(prefs.getString("WeatherConditions",""));
 
         //Setup the adapter
         List<Item> items= factory.getWeatherItem();
@@ -121,7 +129,7 @@ public class WeatherFragment extends Fragment  implements AdapterView.OnItemClic
                             .icon(GoogleMaterial.Icon.gmd_flash_on)
                             .color(Color.WHITE)
                             .sizeDp(24));
-                    Toast.makeText(rootView.getContext(),R.string.switchCalendarActive,Toast.LENGTH_SHORT).show();
+                    Toast.makeText(rootView.getContext(),R.string.switchWeatherActive,Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -189,22 +197,23 @@ public class WeatherFragment extends Fragment  implements AdapterView.OnItemClic
             case R.id.updateWeather:
                 // Do onlick on menu action here
                 updateWeather(getActivity());
-                return true;    
+                return true;
             case R.id.changeInterval:
                 // Do onlick on menu action here
                 dialogChangeInterval(getActivity());
-                return true;    
+                return true;
             }
     return false;
     }
 
-    private void updateWeather(Context context) {
-        SharedPreferences prefs = context.getSharedPreferences("weatherPreferences", Context.MODE_PRIVATE);
+    private void updateWeather(final Context context) {
+        final SharedPreferences prefs = context.getSharedPreferences("weatherPreferences", Context.MODE_PRIVATE);
         Log.e("Updating this city:",prefs.getString("CityLocationID",""));
         Intent alarmIntent = new Intent(context, alarmWeather.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
         AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         manager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pendingIntent);
+
     }
 
 
@@ -251,17 +260,19 @@ public class WeatherFragment extends Fragment  implements AdapterView.OnItemClic
                                        .itemsCallbackSingleChoice(-1, new MaterialDialog.ListCallbackSingleChoice() {
                                            @Override
                                            public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-                                               City item =(City)cities.get(which);
-                                               SharedPreferences prefs = context.getSharedPreferences("weatherPreferences", Context.MODE_PRIVATE);
-                                                SharedPreferences.Editor editor = prefs.edit();
-                                                editor.putString("CityLocationID", item.getId());
-                                                editor.commit();
-                                                Log.e("CityLocation:",item.toString()+"-"+item.getId());
-                                               Intent alarmIntent = new Intent(context, alarmWeather.class);
-                                               PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
-                                               AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-                                               manager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pendingIntent);
-                                               return true;
+                                            City item =(City)cities.get(which);
+                                            SharedPreferences prefs = context.getSharedPreferences("weatherPreferences", Context.MODE_PRIVATE);
+                                            collapsingToolbarLayout.setTitle(item.getName());
+                                            SharedPreferences.Editor editor = prefs.edit();
+                                            editor.putString("CityLocationID", item.getId());
+                                            editor.putString("WeatherCity", item.getName());
+                                            editor.commit();
+                                            Log.e("CityLocation:",item.toString()+"-"+item.getId());
+                                            Intent alarmIntent = new Intent(context, alarmWeather.class);
+                                            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
+                                            AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+                                            manager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pendingIntent);
+                                            return true;
                                            }
                                        })
                                        .positiveText(android.R.string.ok)

@@ -6,9 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
@@ -16,8 +20,11 @@ import android.widget.Toast;
 import com.infoteck.timewall.Gallery.Services.*;
 import com.infoteck.timewall.R;
 
+import static com.infoteck.timewall.Gallery.GalleryActivity.collapsingToolbarLayout;
 import static com.infoteck.timewall.Gallery.GalleryActivity.fabStart;
+import static com.infoteck.timewall.Gallery.GalleryActivity.imageView;
 import static com.infoteck.timewall.Gallery.GalleryActivity.result;
+import static com.infoteck.timewall.Gallery.GalleryActivity.subTitle;
 
 /**
  * Created by Pc on 31/12/2016.
@@ -35,7 +42,7 @@ public class HomeFragment extends Fragment   {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.home_fragment, container, false);
-
+        setHasOptionsMenu(true);
         fabStart.hide();
         cardCalendar=(CardView)rootView.findViewById(R.id.cardCalendar);
         cardWeather=(CardView)rootView.findViewById(R.id.cardWeather);
@@ -160,5 +167,27 @@ public class HomeFragment extends Fragment   {
     }
 
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
+        menu.clear();
+        inflater.inflate(R.menu.menu_main,menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int i=0;
+        switch (item.getItemId()) {
+            case R.id.settings:
+                // Do onlick on menu action herecollapsingToolbarLayout.setTitle(getResources().getString(R.string.settings));
+                imageView.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.settings_background));
+                fabStart.setVisibility(View.GONE);
+                collapsingToolbarLayout.setTitle(getResources().getString(R.string.settings));
+                subTitle.setText("");
+                getFragmentManager().beginTransaction().replace(R.id.container,new SettingsFragment()).commit();
+
+                return true;
+        }
+        return false;
+    }
 
 }

@@ -42,9 +42,21 @@
                 android:layout_height="200dp"
                 android:scaleType="centerCrop"
                 android:fitsSystemWindows="true"
-                android:background="@drawable/header"
+                android:background="@drawable/home"
                 app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
                 app:layout_collapseMode="parallax" />
+            <TextView
+                android:id="@+id/toolbarSubtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/abc_text_size_subhead_material"
+                android:textColor="@android:color/white"
+                android:layout_marginBottom="5dp"
+                android:layout_marginEnd="64dp"
+                android:layout_marginStart="48dp"
+                app:layout_collapseMode="parallax"
+                android:layout_gravity="bottom"
+                android:text=""/>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"

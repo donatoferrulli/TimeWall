@@ -57,10 +57,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.io.File;
 
@@ -73,7 +75,9 @@ public class GalleryActivity extends AppCompatActivity implements AdapterView.On
 
     public static Drawer result;
     public static FloatingActionButton fabStart;
-
+    public static CollapsingToolbarLayout collapsingToolbarLayout ;
+    public static TextView subTitle;
+    public static ImageView imageView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -87,11 +91,13 @@ public class GalleryActivity extends AppCompatActivity implements AdapterView.On
 
         fabStart = (FloatingActionButton) findViewById(R.id.fabStart);
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        final ImageView imageView = (ImageView) findViewById(R.id.backdrop);
+        imageView = (ImageView) findViewById(R.id.backdrop);
+        subTitle= (TextView) findViewById(R.id.toolbarSubtitle);
         setSupportActionBar(toolbar);
 
-        final CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         collapsingToolbarLayout.setTitle(getResources().getString(R.string.TimeWall));
+
 
 
 
@@ -113,7 +119,7 @@ public class GalleryActivity extends AppCompatActivity implements AdapterView.On
         PrimaryDrawerItem weather = new PrimaryDrawerItem().withIdentifier(3).withName(R.string.weather).withIcon(GoogleMaterial.Icon.gmd_wb_sunny);
         PrimaryDrawerItem favorite = new PrimaryDrawerItem().withIdentifier(4).withName(R.string.favorite).withIcon(GoogleMaterial.Icon.gmd_favorite);
         //PrimaryDrawerItem assistant = new PrimaryDrawerItem().withIdentifier(5).withName(R.string.assistant).withIcon(GoogleMaterial.Icon.gmd_assistant);
-        PrimaryDrawerItem settings = new PrimaryDrawerItem().withIdentifier(6).withName(R.string.settings).withIcon(GoogleMaterial.Icon.gmd_settings);
+        PrimaryDrawerItem settings = new PrimaryDrawerItem().withIdentifier(5).withName(R.string.settings).withIcon(GoogleMaterial.Icon.gmd_settings);
 
         //create the drawer and remember the `Drawer` result object
         result = new DrawerBuilder()
@@ -129,13 +135,14 @@ public class GalleryActivity extends AppCompatActivity implements AdapterView.On
                         switch (id) {
                             case 1:
                                 collapsingToolbarLayout.setTitle(getResources().getString(R.string.home));
+                                subTitle.setText("");
                                 getFragmentManager().beginTransaction().replace(R.id.container,new HomeFragment()).commit();
-                                imageView.setBackground(ContextCompat.getDrawable(getApplication(), R.drawable.header));
+                                imageView.setBackground(ContextCompat.getDrawable(getApplication(), R.drawable.home));
                                 fabStart.setVisibility(View.GONE);
                                 break;
                             case 2:
                                 collapsingToolbarLayout.setTitle(getResources().getString(R.string.calendar));
-                                //get type of visualization from settings TODO
+                                subTitle.setText("");
                                 getFragmentManager().beginTransaction().replace(R.id.container,new CalendarFragment()).commit();
                                 imageView.setBackground(ContextCompat.getDrawable(getApplication(), R.drawable.calendar_background));
                                 break;
@@ -146,6 +153,7 @@ public class GalleryActivity extends AppCompatActivity implements AdapterView.On
                                 break;
                             case 4:
                                 collapsingToolbarLayout.setTitle(getResources().getString(R.string.favorite));
+                                subTitle.setText("");
                                 getFragmentManager().beginTransaction().replace(R.id.container,new FavoriteFragment()).commit();
                                 break;
                             /*case 5:
@@ -154,6 +162,9 @@ public class GalleryActivity extends AppCompatActivity implements AdapterView.On
                                 break;*/
                             case 5:
                                 collapsingToolbarLayout.setTitle(getResources().getString(R.string.settings));
+                                imageView.setBackground(ContextCompat.getDrawable(getApplication(), R.drawable.settings_background));
+                                fabStart.setVisibility(View.GONE);
+                                subTitle.setText("");
                                 getFragmentManager().beginTransaction().replace(R.id.container,new SettingsFragment()).commit();
                                 break;
                             default:
@@ -223,16 +234,6 @@ public class GalleryActivity extends AppCompatActivity implements AdapterView.On
         ActivityCompat.startActivity(this, intent, activityOptions.toBundle());
         // END_INCLUDE(start_activity)
     }
-
-    // Menu icons are inflated just as they were with actionbar
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

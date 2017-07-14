@@ -67,6 +67,7 @@ public class CalendarFragment extends Fragment  implements AdapterView.OnItemCli
         setHasOptionsMenu(true);
         //Setup the GridView and set the adapter
         mGridView = (GridView) rootView.findViewById(R.id.grid);
+        mGridView.setBackgroundColor(getResources().getColor(R.color.calendarActivity));
         mGridView.setNestedScrollingEnabled(true);
         mGridView.setOnItemClickListener(this);
 
