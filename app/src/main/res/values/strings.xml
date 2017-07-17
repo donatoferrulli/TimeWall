@@ -1,8 +1,10 @@
 <resources>
     <string name="TimeWall">TimeWall</string>
-    <string name="intro1">intro1</string>
-    <string name="intro2">intro2</string>
-    <string name="intro3">intro3</string>
+    <string name="intro1">Welcome to TimeWall !</string>
+    <string name="intro2">Calendar</string>
+    <string name="intro3">Weather</string>
+    <string name="intro4">Favorites</string>
+    <string name="intro5">Assistant</string>
     <string name="intro1description">intro1description</string>
     <string name="intro2description">intro2description</string>
     <string name="intro3description">intro3description</string>

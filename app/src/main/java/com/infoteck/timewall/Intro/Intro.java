@@ -35,14 +35,7 @@ public class Intro extends AppIntro2 {
         //  Create a new boolean and preference and set it to true
         boolean isFirstStart = getPrefs.getBoolean("firstStart", true);
         //  If the activity has never started before...
-        if (isFirstStart) {
-            //  Make a new preferences editor
-            SharedPreferences.Editor e = getPrefs.edit();
-            //  Edit preference to make it false because we don't want this to run again
-            e.putBoolean("firstStart", false);
-            //  Apply changes
-            e.apply();
-        }else{
+        if (!isFirstStart) {
             //  Launch app intro
             Intent i = new Intent(this, GalleryActivity.class);
             startActivity(i);
@@ -50,9 +43,11 @@ public class Intro extends AppIntro2 {
         }
         // Instead of fragments, you can also use our default slide
         // Just set a title, description, background and image. AppIntro will do the rest
-        addSlide(AppIntroFragment.newInstance(getResources().getString(R.string.intro1), getResources().getString(R.string.intro1description), R.drawable.ic_arrow_back_white, Color.parseColor("#3F51B5")));
-        addSlide(AppIntroFragment.newInstance(getResources().getString(R.string.intro2), getResources().getString(R.string.intro2description), R.drawable.ic_arrow_back_white, Color.parseColor("#3F51B5")));
-        addSlide(AppIntroFragment.newInstance(getResources().getString(R.string.intro3), getResources().getString(R.string.intro3description), R.drawable.ic_arrow_back_white, Color.parseColor("#3F51B5")));
+        addSlide(AppIntroFragment.newInstance(getResources().getString(R.string.intro1), "", R.mipmap.ic_launcher, Color.parseColor("#004272")));
+        addSlide(AppIntroFragment.newInstance(getResources().getString(R.string.intro2), getResources().getString(R.string.descriptionCalendar), R.drawable.intro_calendar, Color.parseColor("#EA782C")));
+        addSlide(AppIntroFragment.newInstance(getResources().getString(R.string.intro3), getResources().getString(R.string.descriptionWeather), R.drawable.intro_temperature, Color.parseColor("#005C9E")));
+        addSlide(AppIntroFragment.newInstance(getResources().getString(R.string.intro4), getResources().getString(R.string.descriptionFavorite), R.drawable.intro_like, Color.parseColor("#006775")));
+        addSlide(AppIntroFragment.newInstance(getResources().getString(R.string.intro5), getResources().getString(R.string.descriptionAssistant), R.drawable.intro_robot, Color.parseColor("#004272")));
         // SHOW or HIDE the statusbar
         showStatusBar(false);
         showSkipButton(false);
@@ -82,6 +77,16 @@ public class Intro extends AppIntro2 {
         if (!file.exists()) {
             file.mkdirs();
         }
+
+        //  Initialize SharedPreferences
+        SharedPreferences getPrefs = PreferenceManager
+                .getDefaultSharedPreferences(getBaseContext());
+        //  Make a new preferences editor
+        SharedPreferences.Editor e = getPrefs.edit();
+        //  Edit preference to make it false because we don't want this to run again
+        e.putBoolean("firstStart", false);
+        //  Apply changes
+        e.apply();
 
     }
 
